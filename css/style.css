@@ -56,3 +56,22 @@ p {
 .names {
     font-size: 13px;
 }
+
+.tooltip {
+    position: absolute;
+    background: white;
+    border: 1px solid #aaa;
+    padding: 8px 10px;
+    border-radius: 4px;
+    pointer-events: none;
+    opacity: 0;
+    font-size: 14px;
+}
+
+#design-justification .mapping-list {
+    margin: 8px 0 16px 18px;
+}
+
+#design-justification .mapping-list li {
+    margin: 4px 0;
+}
