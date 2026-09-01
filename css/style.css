@@ -76,6 +76,18 @@ p {
     margin: 4px 0;
 }
 
+/* Inline code */
+code {
+    font-family: "Consolas", "SFMono-Regular", "Menlo", monospace;
+    font-size: 0.9em;
+    background: #eef1f6;
+    color: #1f3864;
+    padding: 2px 6px;
+    border-radius: 4px;
+    border: 1px solid #e1e6ef;
+    white-space: nowrap;
+}
+
 /* Lab 3 — dataset table */
 .dataset-meta {
     background: #f7f9fc;
