@@ -1,6 +1,6 @@
 """
 STATS 401 — Lab 3 Assignment
-Acquire 1,000 cryptocurrency records from the CoinGecko public API.
+Acquire 1,250 cryptocurrency records from the CoinGecko public API.
 
 Source : https://www.coingecko.com/  (free public REST API, no key required)
 Method : REST API (requests -> JSON)
@@ -19,7 +19,7 @@ headers = {
 
 records = []
 
-for page in range(1, 6):                      # 4 pages x 250 = 1000 records
+for page in range(1, 6):                      # 5 pages x 250 = 1250 records
 
     params = {
         "vs_currency": "usd",
