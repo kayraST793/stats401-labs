@@ -75,3 +75,67 @@ p {
 #design-justification .mapping-list li {
     margin: 4px 0;
 }
+
+/* Lab 3 — dataset table */
+.dataset-meta {
+    background: #f7f9fc;
+    border: 1px solid #e1e6ef;
+    border-radius: 6px;
+    padding: 12px 18px;
+    margin: 16px 0 24px;
+}
+
+.dataset-meta dt {
+    font-weight: bold;
+    color: #1f3864;
+}
+
+.dataset-meta dd {
+    margin: 0 0 8px 0;
+}
+
+.table-wrap {
+    max-height: 600px;
+    overflow: auto;
+    border: 1px solid #ddd;
+    border-radius: 6px;
+}
+
+#data-table {
+    border-collapse: collapse;
+    width: 100%;
+    font-size: 14px;
+}
+
+#data-table th,
+#data-table td {
+    padding: 6px 10px;
+    border-bottom: 1px solid #eee;
+    text-align: left;
+    white-space: nowrap;
+}
+
+#data-table thead th {
+    position: sticky;
+    top: 0;
+    background: #1f3864;
+    color: white;
+    user-select: none;
+}
+
+#data-table thead th:hover {
+    background: #2c4f8a;
+}
+
+#data-table tbody tr:nth-child(even) {
+    background: #f6f8fb;
+}
+
+#data-table tbody tr:hover {
+    background: #eef3fb;
+}
+
+#data-table td.num {
+    text-align: right;
+    font-variant-numeric: tabular-nums;
+}
