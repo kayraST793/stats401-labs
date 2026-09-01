@@ -1,27 +1,97 @@
 <!DOCTYPE html>
-
 <html lang="en">
-
 <head>
-
     <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
 
-    <title>Lab 3</title>
+    <title>Lab 3 — Web Data Acquisition</title>
 
+    <link rel="stylesheet"
+          href="../css/style.css">
 </head>
 
 <body>
 
-<h1>Lab 3</h1>
+<header>
+    <h1>STATS 401</h1>
+    <p>Data Acquisition and Visualization</p>
+</header>
 
-<p>
-    Lab 3 will be added here.
-</p>
+<nav class="lab-nav">
+    <a href="../lab1/index.html">Lab 1</a>
+    <a href="../lab2/index.html">Lab 2</a>
+    <a href="../lab3/index.html">Lab 3</a>
+    <a href="../lab4/index.html">Lab 4</a>
+    <a href="../lab5/index.html">Lab 5</a>
+    <a href="../lab6/index.html">Lab 6</a>
+    <a href="../lab7/index.html">Lab 7</a>
+    <a href="../lab8/index.html">Lab 8</a>
+    <a href="../lab9/index.html">Lab 9</a>
+    <a href="../lab10/index.html">Lab 10</a>
+</nav>
 
-<a href="../index.html">
-    Back to home
-</a>
+<main>
+    <h2>Lab 3 — Web Data Acquisition with Python</h2>
+
+    <p>
+        The table below shows a dataset I acquired programmatically with a
+        Python script. Click any column heading to sort the table (click again
+        to reverse the direction).
+    </p>
+
+    <dl class="dataset-meta">
+        <dt>Dataset</dt>
+        <dd>
+            Top cryptocurrencies by market capitalization, including price,
+            market cap, 24-hour trading volume, and 24-hour price change.
+        </dd>
+
+        <dt>Source</dt>
+        <dd>
+            CoinGecko public API —
+            <a href="https://www.coingecko.com/en/api" target="_blank" rel="noopener">
+                coingecko.com
+            </a>
+            (free, no API key required).
+        </dd>
+
+        <dt>Acquisition method</dt>
+        <dd>
+            REST API using Python <code>requests</code> (parsed as JSON). The
+            script pages through the <code>/coins/markets</code> endpoint
+            (250 records per request), with a delay between requests
+            (rate limiting) and <code>try/except</code> error handling.
+        </dd>
+
+        <dt>Records collected</dt>
+        <dd><span id="record-count">1,000</span> cryptocurrencies</dd>
+
+        <dt>Responsible acquisition</dt>
+        <dd>
+            CoinGecko provides a public API intended for programmatic access.
+            The script identifies itself with a User-Agent, requests only the
+            data needed (four paginated calls), and pauses between requests to
+            avoid excessive load. No authentication, paywalls, or restrictions
+            were bypassed, and no private personal data was collected.
+        </dd>
+    </dl>
+
+    <div class="table-wrap">
+        <table id="data-table">
+            <thead></thead>
+            <tbody></tbody>
+        </table>
+    </div>
+
+    <p>
+        <a href="../index.html">Back to home</a>
+    </p>
+
+</main>
+
+<script src="https://cdn.jsdelivr.net/npm/d3@7"></script>
+<script src="lab3.js"></script>
 
 </body>
-
 </html>
