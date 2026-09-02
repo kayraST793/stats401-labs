@@ -40,7 +40,11 @@ d3.csv("../data/coins.csv", d => {
 }).then(data => {
 
     const columns = data.columns;
-    const sortState = {};                       // remembers direction per column
+
+    // Track the current sort so a NEW column starts ascending,
+    // and clicking the SAME column again reverses direction.
+    let sortColumn = null;
+    let ascending = true;
 
     const table = d3.select("#data-table");
 
@@ -54,14 +58,29 @@ d3.csv("../data/coins.csv", d => {
         .style("cursor", "pointer")
         .on("click", function (event, column) {
 
-            const ascending = !sortState[column];   // toggle
-            sortState[column] = ascending;
+            // New column -> ascending; same column -> flip direction
+            if (column === sortColumn) {
+                ascending = !ascending;
+            } else {
+                sortColumn = column;
+                ascending = true;
+            }
 
-            data.sort((a, b) =>
-                ascending
-                    ? d3.ascending(a[column], b[column])
-                    : d3.descending(a[column], b[column])
-            );
+            const direction = ascending ? 1 : -1;
+
+            data.sort((a, b) => {
+                const x = a[column];
+                const y = b[column];
+
+                // Push empty/missing values to the bottom either way
+                const xEmpty = x === null || x === undefined || (typeof x === "number" && Number.isNaN(x));
+                const yEmpty = y === null || y === undefined || (typeof y === "number" && Number.isNaN(y));
+                if (xEmpty && yEmpty) return 0;
+                if (xEmpty) return 1;
+                if (yEmpty) return -1;
+
+                return direction * d3.ascending(x, y);
+            });
 
             updateRows();
         });
