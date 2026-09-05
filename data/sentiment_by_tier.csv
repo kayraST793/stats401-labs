@@ -1,0 +1,10 @@
+follower_tier,sentiment,count,share
+Micro (<1k),Negative,133,0.1435
+Micro (<1k),Neutral,414,0.4466
+Micro (<1k),Positive,380,0.4099
+Mid (1k-100k),Negative,65,0.119
+Mid (1k-100k),Neutral,258,0.4725
+Mid (1k-100k),Positive,223,0.4084
+Macro (>100k),Negative,4,0.1481
+Macro (>100k),Neutral,13,0.4815
+Macro (>100k),Positive,10,0.3704
