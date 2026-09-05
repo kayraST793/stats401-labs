@@ -163,10 +163,7 @@ df["sentiment_positive"] = [s.get("positive", 0) for s in score_dicts]
 df["sentiment"] = [max(s, key=s.get).capitalize() for s in score_dicts]
 df["sentiment_score"] = df["sentiment_positive"] - df["sentiment_negative"]
 
-# Model confidence = probability of the predicted (winning) class. A 3-class
-# softmax bottoms out near 0.33 (a coin-toss between all three) and tops out at
-# 1.0 (certain). Low values flag tweets the model found hard: sarcasm, mixed
-# signals, slang, or ambiguous language.
+# Model confidence = probability of the predicted (winning) class.
 df["sentiment_confidence"] = df[
     ["sentiment_negative", "sentiment_neutral", "sentiment_positive"]
 ].max(axis=1)

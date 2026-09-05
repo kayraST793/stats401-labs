@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Lab 4 - Tweet Sentiment Analysis</title>
+    <title>Lab 4: Tweet Sentiment Analysis</title>
 
     <link rel="stylesheet"
           href="../css/style.css">
@@ -32,7 +32,6 @@
 
 <main>
     <h2>Lab 4: Tweet Sentiment Analysis</h2>
-    <h2>ChatGPT Tweet Sentiment</h2>
     <p class="subtitle">
         RoBERTa sentiment on a reproducible random sample of 1,500 ChatGPT tweets
         (Nov 2022 to Feb 2023). Source: <em>deberain/ChatGPT-Tweets</em>.
@@ -53,7 +52,7 @@
     <p class="chart-note">
         <b>Takeaway:</b> all three lines climb together toward an early-February
         2023 peak as ChatGPT went mainstream, and every week neutral and positive
-        sit well above negative &mdash; volume surged, but the mix stayed
+        sit well above negative - volume surged, but the mix stayed
         consistently favorable rather than turning hostile.
     </p>
 
@@ -61,8 +60,8 @@
     <p class="chart-note">
         The chart above counts tweets; this one measures <b>mood</b>. Each week is
         collapsed to the <b>average sentiment score</b>, where
-        <code>score = P(positive) &minus; P(negative)</code> per tweet, ranging
-        from &minus;1 (all negative) to +1 (all positive). The dashed line at
+        <code>score = P(positive) - P(negative)</code> per tweet, ranging
+        from -1 (all negative) to +1 (all positive). The dashed line at
         <b>0</b> is net-neutral: points above it mean the average tweet leaned
         positive that week, below it negative. This answers a different question
         than the counts; not "how many tweets" but "which way did opinion
@@ -127,14 +126,14 @@
             follower counts to numeric, and lightly normalized text (HTML
             entities, whitespace, masked @users and URLs) before scoring. For each
             tweet the model returns three class probabilities; the label is the
-            highest, and <em>sentiment_score</em> = P(positive) &minus;
+            highest, and <em>sentiment_score</em> = P(positive) -
             P(negative). Four views build the picture. The weekly count and
             average-polarity lines show volume climbing to an early-February peak
             while mood stays net-positive every week (about +0.22 to +0.42),
             highest among the earliest adopters. Grouping authors into
-            follower-based influence tiers, the sentiment mix barely moves &mdash;
-            micro, mid, and macro all sit near 12-15% negative, 45-48% neutral,
-            and 37-41% positive &mdash; so reach does not shape opinion. Finally, a
+            follower-based influence tiers, the sentiment mix barely moves.
+            Micro, mid, and macro all sit near 12-15% negative, 45-48% neutral,
+            and 37-41% positive, respectively, so the reach does not shape opinion. Finally, a
             confidence histogram shows only 2.7% of tweets below 0.50, so the model
             is decisive and the labels are trustworthy. Overall, early ChatGPT
             discourse was high-volume, broadly positive, and remarkably uniform

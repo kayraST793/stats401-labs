@@ -1,5 +1,4 @@
 /*
- * lab4.js: D3 v7 visualization for Lab 4 (STATS 401)
  * Four views of RoBERTa sentiment on 1,500 ChatGPT tweets (Dec 2022 to Feb 2023):
  *   1. Weekly line chart: one line per sentiment, trend over time
  *   2. Weekly polarity line: average sentiment score (net mood) per week
@@ -10,7 +9,7 @@
  *              ../data/sentiment_by_tier.csv , ../data/sentiment_confidence.csv
  */
 
-// Fixed sentiment order + a colorblind-friendly palette (Tableau 10 subset).
+// Fixed sentiment order + palette.
 const SENTIMENTS = ["Negative", "Neutral", "Positive"];
 const COLOR = d3
   .scaleOrdinal()
