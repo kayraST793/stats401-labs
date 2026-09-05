@@ -151,3 +151,73 @@ code {
     text-align: right;
     font-variant-numeric: tabular-nums;
 }
+
+/* Lab 4 — tweet sentiment */
+:root {
+    --ink: #1f2328;
+    --muted: #57606a;
+    --line: #d0d7de;
+}
+
+.subtitle {
+    color: var(--muted);
+    margin: 0 0 28px;
+}
+
+.caveat {
+    font-size: 0.85rem;
+    font-style: italic;
+}
+
+.chart-note {
+    color: var(--muted);
+    font-size: 0.9rem;
+    margin: 0 0 12px;
+}
+
+.card {
+    border: 1px solid var(--line);
+    border-radius: 10px;
+    padding: 16px;
+    background: #fff;
+}
+
+.axis-label {
+    font-size: 12px;
+    fill: var(--muted);
+}
+
+.legend-text {
+    font-size: 12px;
+    fill: var(--ink);
+}
+
+.analysis {
+    border-left: 4px solid #59a14f;
+    background: #f6f8fa;
+    padding: 16px 20px;
+    border-radius: 0 8px 8px 0;
+    margin-top: 12px;
+}
+
+#error {
+    display: none;
+    color: #b42318;
+    background: #fef3f2;
+    border: 1px solid #fecdca;
+    padding: 12px 16px;
+    border-radius: 8px;
+    margin: 16px 0;
+    font-size: 0.9rem;
+}
+
+a.back {
+    display: inline-block;
+    margin-top: 32px;
+    color: #0969da;
+    text-decoration: none;
+}
+
+a.back:hover {
+    text-decoration: underline;
+}
