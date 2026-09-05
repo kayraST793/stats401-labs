@@ -1,27 +1,151 @@
 <!DOCTYPE html>
-
 <html lang="en">
 
 <head>
-
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lab 4 - Tweet Sentiment Analysis</title>
 
-    <title>Lab 4</title>
-
+    <link rel="stylesheet"
+          href="../css/style.css">
 </head>
 
 <body>
 
-<h1>Lab 4</h1>
+<header>
+    <h1>STATS 401</h1>
+    <p>Data Acquisition and Visualization</p>
+</header>
 
-<p>
-    Lab 4 will be added here.
-</p>
+<nav class="lab-nav">
+    <a href="../lab1/index.html">Lab 1</a>
+    <a href="../lab2/index.html">Lab 2</a>
+    <a href="../lab3/index.html">Lab 3</a>
+    <a href="../lab4/index.html">Lab 4</a>
+    <a href="../lab5/index.html">Lab 5</a>
+    <a href="../lab6/index.html">Lab 6</a>
+    <a href="../lab7/index.html">Lab 7</a>
+    <a href="../lab8/index.html">Lab 8</a>
+    <a href="../lab9/index.html">Lab 9</a>
+    <a href="../lab10/index.html">Lab 10</a>
+</nav>
 
-<a href="../index.html">
-    Back to home
-</a>
+<main>
+    <h2>ChatGPT Tweet Sentiment</h2>
+    <p class="subtitle">
+        RoBERTa sentiment on a reproducible random sample of 1,500 ChatGPT tweets
+        (Nov 2022 to Feb 2023). Source: <em>deberain/ChatGPT-Tweets</em>.
+        <br><span class="caveat">Note: the sentiment values are model-generated
+        estimates produced by RoBERTa, not human-labeled ground truth, and carry
+        the model's own error.</span>
+    </p>
 
+    <div id="error"></div>
+
+    <h2>Sentiment over time (weekly)</h2>
+    <p class="chart-note">
+        Weekly tweet counts by sentiment (Monday-anchored). Each line shares a
+        zero baseline, so the three sentiment trends are directly comparable.
+        Hover a point for the exact count and its within-week share.
+    </p>
+    <div class="card" id="chart-line"></div>
+    <p class="chart-note">
+        <b>Takeaway:</b> all three lines climb together toward an early-February
+        2023 peak as ChatGPT went mainstream, and every week neutral and positive
+        sit well above negative &mdash; volume surged, but the mix stayed
+        consistently favorable rather than turning hostile.
+    </p>
+
+    <h2>Average polarity over time (weekly)</h2>
+    <p class="chart-note">
+        The chart above counts tweets; this one measures <b>mood</b>. Each week is
+        collapsed to the <b>average sentiment score</b>, where
+        <code>score = P(positive) &minus; P(negative)</code> per tweet, ranging
+        from &minus;1 (all negative) to +1 (all positive). The dashed line at
+        <b>0</b> is net-neutral: points above it mean the average tweet leaned
+        positive that week, below it negative. This answers a different question
+        than the counts; not "how many tweets" but "which way did opinion
+        tilt". Hover a point for the exact average and the week's tweet count.
+    </p>
+    <div class="card" id="chart-polarity"></div>
+    <p class="chart-note">
+        <b>Takeaway:</b> every week stays net-positive (roughly +0.22 to +0.42,
+        never crossing zero), peaking in the very first week and then easing into
+        a steadier band. The earliest adopters were the most enthusiastic,
+        and as the crowd broadened the mood cooled slightly but remained positive.
+    </p>
+
+    <h2>Sentiment by influence tier</h2>
+    <p class="chart-note">
+        Authors are bucketed by follower count into
+        <b>Micro</b> (&lt;1,000 followers), <b>Mid</b> (1,000 to 100,000), and
+        <b>Macro</b> (&gt;100,000). Bars show the <b>share</b> of each sentiment
+        <em>within</em> a tier, so tiers of very different sizes stay comparable;
+        read down a single colour across the three tiers to compare one sentiment.
+        The <b>n=</b> label under each tier is its sample size. The steep drop
+        (927 to 546 to 27) is expected, not a sampling flaw: follower counts are
+        heavily right-skewed, so genuine large-audience <b>influencers (Macro) are
+        inherently rare</b>, and a random sample should contain very few. Read
+        Macro's shares as directional given its small sample. Hover for
+        percentages and tweet counts.
+    </p>
+    <div class="card" id="chart-tier-grouped"></div>
+    <p class="chart-note">
+        <b>Takeaway:</b> the sentiment mix barely shifts from Micro to Macro, so
+        reach does not meaningfully change opinion. Enthusiasm and skepticism
+        are shared regardless of audience size (with Macro read cautiously at n=27).
+    </p>
+
+    <h2>Model confidence (how sure is RoBERTa?)</h2>
+    <p class="chart-note">
+        Sentiment labels are only as trustworthy as the model that produced them,
+        so before reading anything into them it is worth asking how confident
+        RoBERTa actually was. Each tweet's <b>confidence</b> is the probability it
+        assigned to the winning class; a three-class model bottoms out near
+        <b>0.33</b> (a near-tie between all three) and tops out at <b>1.00</b>
+        (certain). The histogram below bins those confidences across all 1,500
+        tweets. The dashed line marks a <b>0.50</b> low-confidence threshold: bars
+        to its left are tweets the model found genuinely hard (often
+        sarcasm, mixed sentiment, or slang). Hover a bar for its count and share.
+    </p>
+    <div class="card" id="chart-confidence"></div>
+    <p class="chart-note">
+        <b>Takeaway:</b> the distribution is heavily right-skewed with only 2.7%
+        of tweets below 0.50, so RoBERTa is decisive on the vast majority. The
+        sentiment labels are trustworthy enough to build the charts above on.
+    </p>
+
+    <h2>Analysis</h2>
+    <div class="analysis">
+        <p>
+            This page applies a fine-tuned RoBERTa model
+            (<em>cardiffnlp/twitter-roberta-base-sentiment-latest</em>) to a
+            reproducible random sample of 1,500 ChatGPT tweets collected between
+            late November 2022 and February 2023. Cleaning removed duplicate
+            tweets and unparseable dates, filled missing locations, coerced
+            follower counts to numeric, and lightly normalized text (HTML
+            entities, whitespace, masked @users and URLs) before scoring. For each
+            tweet the model returns three class probabilities; the label is the
+            highest, and <em>sentiment_score</em> = P(positive) &minus;
+            P(negative). Four views build the picture. The weekly count and
+            average-polarity lines show volume climbing to an early-February peak
+            while mood stays net-positive every week (about +0.22 to +0.42),
+            highest among the earliest adopters. Grouping authors into
+            follower-based influence tiers, the sentiment mix barely moves &mdash;
+            micro, mid, and macro all sit near 12-15% negative, 45-48% neutral,
+            and 37-41% positive &mdash; so reach does not shape opinion. Finally, a
+            confidence histogram shows only 2.7% of tweets below 0.50, so the model
+            is decisive and the labels are trustworthy. Overall, early ChatGPT
+            discourse was high-volume, broadly positive, and remarkably uniform
+            across influence levels.
+        </p>
+    </div>
+
+    <a class="back" href="../index.html">← Back to home</a>
+</main>
+
+<script src="https://cdn.jsdelivr.net/npm/d3@7"></script>
+<script src="lab4.js"></script>
 </body>
 
 </html>
