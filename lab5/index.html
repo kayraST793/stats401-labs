@@ -4,13 +4,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Lab 5: <NAME></title>
+    <title>Lab 5: Urban Transit Network</title>
 
     <link rel="stylesheet"
           href="../css/style.css">
 </head>
 
-<body>
+<body class="wide">
 
 <header>
     <h1>STATS 401</h1>
@@ -32,19 +32,168 @@
 
 <main>
 
-<h1>Lab 5</h1>
-    <h2>Lab 5: <NAME></h2>
-
-    <p>
-        Lab 5 will be added here.
+    <h2>Lab 5: Interactive Network Visualization</h2>
+    <p class="subtitle">
+        A synthetic urban transit system of 50 stations and 50 direct connections, shown two ways: an interactive force-directed map and an adjacency matrix.
     </p>
+
+    <h2>Dataset</h2>
+    <p>
+        Each <strong>station</strong> sits in one of five districts (Central, North, South, East, West), carries an approximate daily passenger
+        volume, and has a functional role: Local, Transfer, or Terminal. Each <strong>route</strong> is a direct link between two stations, with a
+        travel time in minutes and a service class: Metro, Express, or Shuttle. The network is undirected: a route means passengers can travel directly
+        between the pair either way.
+    </p>
+
+    <h2>Transit Map</h2>
+    <p class="chart-note">
+        Drag stations to untangle the layout. Hover a station to isolate it and
+        its direct neighbours; hover any element for exact values.
+    </p>
+
+    <div id="legend"></div>
+    <div id="chart"></div>
+
+    <h3>Node-link design</h3>
+    <p class="design-text">
+        Each of the five variables uses a channel that matches its type, so all
+        five can be read at once. The table below lists the choices and the
+        reason for each.
+    </p>
+    <table class="map-table">
+        <thead>
+            <tr><th>Variable</th><th>Channel</th><th>Why it fits</th></tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>District</td>
+                <td>Node colour</td>
+                <td>District is categorical with no order. Colour is fast to scan and does not rank one region above another.</td>
+            </tr>
+            <tr>
+                <td>Daily passengers</td>
+                <td>Node size (square-root)</td>
+                <td>Passengers is a quantity, and a bigger mark reads as busier. A square-root scale keeps the node area proportional to the value, so the comparison stays honest.</td>
+            </tr>
+            <tr>
+                <td>Station type</td>
+                <td>Node shape</td>
+                <td>Type is categorical. Shape stays readable on top of colour and size, so the three node variables read independently.</td>
+            </tr>
+            <tr>
+                <td>Travel time</td>
+                <td>Link colour (Viridis) and width</td>
+                <td>Time is a quantity. Viridis is perceptually uniform and colour-blind-safe. Width backs up the colour, so a long trip looks both dark and thick and the slow links stand out.</td>
+            </tr>
+            <tr>
+                <td>Route type</td>
+                <td>Link dash pattern</td>
+                <td>Route type is categorical. A dash pattern is a light secondary cue that does not fight the other channels.</td>
+            </tr>
+        </tbody>
+    </table>
+    <p class="design-text">Three interactions help the reader:</p>
+    <ul class="design-list">
+        <li>Dragging untangles crossings.</li>
+        <li>Hovering isolates a station and its direct neighbours. This answers who connects to whom.</li>
+        <li>Tooltips give the exact numbers that size and colour can only suggest.</li>
+    </ul>
+
+    <h2>Adjacency Matrix</h2>
+    <p class="chart-note">
+        The same 50 stations as a matrix. Rows and columns are stations, ordered and grouped by district; a filled cell marks a direct route between the
+        pair. Cell colour shows the route type and darker cells are longer trips. Hover a cell for the exact pair, route, and travel time.
+    </p>
+
+    <div id="matrix-legend"></div>
+    <div id="matrix-controls"></div>
+    <div id="matrix"></div>
+
+    <h3>Matrix design</h3>
+    <p class="design-text">
+        The matrix shows the same network with stations on both axes. A filled cell marks a direct route. The cell colour repeats the route type. The
+        cell shade encodes travel time, where darker means longer. This keeps both route variables. District rides along the coloured edge strips and
+        the label numbers. <strong>The ordering toggle is the main design lever.</strong> Grouping by <strong>district</strong> tests whether
+        regions connect internally. Grouping by <strong>station type</strong> exposes hub structure. Station type is kept off the cells on purpose,
+        because five encodings would overload a 50×50 grid. Ordering carries that variable instead. The symmetry across the empty diagonal confirms the
+        network is undirected.
+    </p>
+
+    <h2>Network Questions &amp; Findings</h2>
+    <p class="chart-note">
+        Each answer is read from the visualizations above, not from the raw files.
+    </p>
+
+    <div class="qa">
+        <p class="qa-q">1. Which stations appear central in the network?</p>
+        <p class="qa-meta"><span class="tag partial">Partially</span> Read from the node-link map and the matrix, using where links converge and which rows have the most filled cells.</p>
+        <p>
+            There is no single dominant hub. The map is a sparse loop with a few cross-links. Instead of one busy centre, several stations tie at the
+            highest degree of three. Examples include Stations 4, 7, 16, 18 and 23. You can see them where three edges meet at a node. The rows and
+            columns with the most filled cells confirm it. Terminals are over-represented among these best-connected stations.
+        </p>
+    </div>
+
+    <div class="qa">
+        <p class="qa-q">2. Which districts are strongly connected to one another?</p>
+        <p class="qa-meta"><span class="tag well">Answered well</span> Read from the district-ordered matrix, using the block dividers and the off-diagonal cells.</p>
+        <p>
+            Almost every route crosses a district boundary. Only two of the fifty routes stay inside a single district. In the district-ordered matrix,
+            the filled cells sit outside the diagonal blocks. So no district is internally cohesive. The whole system is woven together across regions.
+            The map shows the same pattern, with colours interspersed rather than clustered.
+        </p>
+    </div>
+
+    <div class="qa">
+        <p class="qa-q">3. Where are transfer or terminal stations in the topology?</p>
+        <p class="qa-meta"><span class="tag well">Answered well</span> Read from both views, using node shape and the station-type ordering of the matrix.</p>
+        <p>
+            Terminals (triangles) tend to sit at the higher-degree positions. They act as endpoints that still gather three links. Transfers are
+            involved in about two-thirds of all routes (33 of 50), so they work as connectors between the other types. Switching the matrix to
+            station-type ordering makes this visible. Same-type links are rare: there are no Local-to-Local routes and only two Terminal-to-Terminal
+            routes. Direct Local-to-Terminal links are common, though, with 15 routes. So the network is not a pure hub-and-spoke. It mixes a
+            Transfer-centred core with a direct Local-to-Terminal web.
+        </p>
+    </div>
+
+    <div class="qa">
+        <p class="qa-q">4. Which stations have high passenger volume?</p>
+        <p class="qa-meta"><span class="tag well">Answered well</span> Read from the node-link map, using node size.</p>
+        <p>
+            The largest nodes are easy to pick out. The six biggest are Stations 45 to 50. The striking part is that three of the highest-volume stations
+            (46, 48 and 49) sit in the "Unconnected" column. They have heavy ridership but no direct routes in this dataset. Placing the orphans in
+            a labelled strip makes that mismatch obvious.
+        </p>
+    </div>
+
+    <div class="qa">
+        <p class="qa-q">5. Where are the longest direct travel-time connections?</p>
+        <p class="qa-meta"><span class="tag well">Answered well</span> Read from the node-link map, using the dark, thick links.</p>
+        <p>
+            The longest trips are the darkest, thickest edges, so they read immediately. The top three are Stations 7 and 31 (16 min), Stations 18
+            and 34 (15 min), and Stations 29 and 50 (14 min). All three are Express routes. All three cross districts. The darkest cells in the matrix
+            confirm the same pairs. Doubling travel time onto both colour and width is what makes these stand out.
+        </p>
+    </div>
+
+    <div class="qa">
+        <p class="qa-q">6. Are particular route types concentrated in particular parts of the network?</p>
+        <p class="qa-meta"><span class="tag partial">Partially</span> Read from the matrix under station-type ordering and from the node-link map, using cell colour and dash patterns.</p>
+        <p>
+            The three route types are evenly split overall (Metro 16, Express 17, Shuttle 17). But they concentrate by role rather than by region.
+            Metro routes almost always connect non-transfer pairs, which form the sequential spine of the network. Express and Shuttle routes
+            overwhelmingly touch Transfer stations. This shows up in the type-ordered matrix as coloured cells clustering in the Transfer band.
+            It also shows on the map as dash patterns gathering around the transfer squares.
+        </p>
+    </div>
 
     <a class="back" href="../index.html">← Back to home</a>
 </main>
 
+<div id="tooltip" class="tooltip"></div>
+
 <script src="https://cdn.jsdelivr.net/npm/d3@7"></script>
-<!-- Place the .js file here -->
-<!-- <script src="js/lab#.js"></script> -->
+<script src="lab5.js"></script>
 
 </body>
 
