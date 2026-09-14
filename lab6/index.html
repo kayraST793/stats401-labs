@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Lab 6: <NAME></title>
+    <title>Lab 6: Hierarchical Data Visualization: Trees and Treemaps</title>
 
     <link rel="stylesheet"
           href="../css/style.css">
@@ -32,19 +32,50 @@
 
 <main>
 
-    <h1>Lab 6</h1>
-    <h2>Lab 6: <NAME></h2>
+    <h2>Lab 6: Hierarchical Data Visualization: Trees and Treemaps</h2>
 
     <p>
-        Lab 6 will be added here.
+        Two treemaps of a synthetic GDP dataset. The hierarchy goes continent, then area, then country. Rectangle size shows the
+        GDP in billions of dollars and rectangle colour shows whether GDP went up, stayed the same, or went down. The two treemaps
+        use different tiling methods so the same numbers are laid out in two different ways.
     </p>
+
+    <div id="status-legend" class="status-legend"></div>
+
+    <section>
+        <h3>Treemap 1: Squarify</h3>
+        <div id="treemap1"></div>
+    </section>
+
+    <section>
+        <h3>Treemap 2: Binary</h3>
+        <div id="treemap2"></div>
+    </section>
+
+    <section id="design">
+        <h3>Design description</h3>
+        <p>
+            I put GDP on the size of each rectangle because size is easy to compare and area is what a treemap does best. The largest
+            economies like the United States and China take most of the space, so the ranking is clear without reading numbers. GDP
+            status goes on colour, green for an increase, grey for unchanged, and red for a decrease, which is a familiar reading
+            and the legend explains it. Because colour is already used for status, I show the hierarchy with nested headers instead of a
+            second colour, so each continent and area gets a labelled strip, and size, status, and grouping stay on separate channels.
+        </p>
+        <p>
+            Both treemaps hold the same hierarchy and values, so the only difference is how the space is cut. Squarify greedily keeps
+            rectangles close to squares, which makes labels and areas easy to read and compare. Binary splits each group into two balanced
+            halves by value, so it also produces compact rectangles but arranges them in a different order and shape. Comparing the two
+            shows that the layout can change a lot while the sizes and colours stay the same.
+        </p>
+    </section>
 
     <a class="back" href="../index.html">← Back to home</a>
 </main>
 
+<div id="tooltip" class="tooltip"></div>
+
 <script src="https://cdn.jsdelivr.net/npm/d3@7"></script>
-<!-- Place the .js file here -->
-<!-- <script src="js/lab#.js"></script> -->
+<script src="lab6.js"></script>
 
 </body>
 
