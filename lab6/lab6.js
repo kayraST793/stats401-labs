@@ -56,11 +56,18 @@ function drawTreemap(data, selector, tile, prefix) {
         .attr("width", width)
         .attr("height", height);
 
+    // scales let us zoom by remapping a region to the full view
+    const x = d3.scaleLinear().domain([0, width]).range([0, width]);
+    const y = d3.scaleLinear().domain([0, height]).range([0, height]);
+
     const cellW = d => d.x1 - d.x0;
     const cellH = d => d.y1 - d.y0;
 
+    const sw = d => x(d.x1) - x(d.x0);
+    const sh = d => y(d.y1) - y(d.y0);
+
     // area panels sit behind the countries
-    svg.append("g")
+    const areaBg = svg.append("g")
         .selectAll("rect")
         .data(root.descendants().filter(d => d.depth === 2))
         .join("rect")
@@ -91,6 +98,7 @@ function drawTreemap(data, selector, tile, prefix) {
 
     // skip labels on cells too small to hold them
     cell.append("text")
+        .attr("class", "leaf-label")
         .attr("clip-path", (d, i) => `url(#clip-${prefix}-${i})`)
         .attr("x", 5)
         .attr("y", 16)
@@ -118,9 +126,14 @@ function drawTreemap(data, selector, tile, prefix) {
         })
         .on("mouseout", function () {
             tooltip.style("opacity", 0);
+        })
+        .on("click", function (event, d) {
+            // click a country to zoom into its area, click again to zoom out
+            const area = d.parent;
+            zoomTo(zoomedArea === area ? null : area);
         });
 
-    // draw the name headers for one level
+    // draw the name headers for one level, returns the group selection
     function drawHeaders(depth, headerClass, headerHeight, textY) {
         const nodes = root.descendants().filter(d => d.depth === depth);
 
@@ -142,10 +155,56 @@ function drawTreemap(data, selector, tile, prefix) {
             .attr("x", 5)
             .attr("y", textY)
             .text(d => d.data.name);
+
+        return group;
     }
 
-    drawHeaders(2, "area-header", areaHeader, 11);
-    drawHeaders(1, "continent-header", continentHeader, 14);
+    const areaGroups = drawHeaders(2, "area-header", areaHeader, 11);
+    const continentGroups = drawHeaders(1, "continent-header", continentHeader, 14);
+
+    let zoomedArea = null;
+
+    function zoomTo(area) {
+        zoomedArea = area;
+
+        if (area) {
+            x.domain([area.x0, area.x1]);
+            y.domain([area.y0, area.y1]);
+        } else {
+            x.domain([0, width]);
+            y.domain([0, height]);
+        }
+
+        const dur = 600;
+
+        areaBg.transition().duration(dur)
+            .attr("x", d => x(d.x0))
+            .attr("y", d => y(d.y0))
+            .attr("width", sw)
+            .attr("height", sh);
+
+        cell.transition().duration(dur)
+            .attr("transform", d => `translate(${x(d.x0)},${y(d.y0)})`);
+
+        cell.select("rect").transition().duration(dur)
+            .attr("width", sw)
+            .attr("height", sh);
+
+        cell.select("clipPath rect").transition().duration(dur)
+            .attr("width", sw)
+            .attr("height", sh);
+
+        // reveal labels that are now big enough after zooming
+        cell.select("text.leaf-label")
+            .text(d => (sw(d) >= 34 && sh(d) >= 18) ? d.data.name : "");
+
+        [areaGroups, continentGroups].forEach(group => {
+            group.transition().duration(dur)
+                .attr("transform", d => `translate(${x(d.x0)},${y(d.y0)})`);
+            group.select("clipPath rect").transition().duration(dur)
+                .attr("width", sw);
+        });
+    }
 }
 
 buildLegend();
