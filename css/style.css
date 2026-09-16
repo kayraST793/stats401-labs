@@ -499,6 +499,11 @@ body.wide #legend {
     stroke: none;
 }
 
+#treemap1 .cell,
+#treemap2 .cell {
+    cursor: pointer;
+}
+
 .area-bg {
     fill: #ececec;
 }
