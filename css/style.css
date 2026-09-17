@@ -500,7 +500,8 @@ body.wide #legend {
 }
 
 #treemap1 .cell,
-#treemap2 .cell {
+#treemap2 .cell,
+.area-bg {
     cursor: pointer;
 }
 
