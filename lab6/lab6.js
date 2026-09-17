@@ -60,7 +60,9 @@ function drawTreemap(data, selector, tile, prefix) {
     const cellH = d => d.y1 - d.y0;
 
     // precompute a full-canvas layout of each area so a zoom can give even a
-    // hidden, zero-height country a real rectangle to grow into
+    // hidden, zero-height country a real rectangle to grow into. A taller top
+    // band keeps the region name clear of the country labels when zoomed in.
+    const zoomHeader = 26;
     root.descendants().filter(d => d.depth === 2).forEach(area => {
         const sub = d3.hierarchy(area.data)
             .sum(d => d.gdp || 0)
@@ -69,9 +71,8 @@ function drawTreemap(data, selector, tile, prefix) {
         d3.treemap()
             .tile(tile)
             .size([width, height])
-            .paddingTop(areaHeader)
             .paddingInner(2)
-            .paddingOuter(0)(sub);
+            .paddingTop(zoomHeader)(sub);
 
         const byName = new Map(sub.leaves().map(l => [l.data.name, l]));
         area.leaves().forEach(orig => {
