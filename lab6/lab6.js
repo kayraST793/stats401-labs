@@ -33,7 +33,7 @@ function drawTreemap(data, selector, tile, prefix) {
 
     // reserve a top strip on each continent and area for its name
     const continentHeader = 20;
-    const areaHeader = 10;
+    const areaHeader = 15;
 
     d3.treemap()
         .tile(tile)
@@ -56,15 +56,32 @@ function drawTreemap(data, selector, tile, prefix) {
         .attr("width", width)
         .attr("height", height);
 
-    // scales let us zoom by remapping a region to the full view
-    const x = d3.scaleLinear().domain([0, width]).range([0, width]);
-    const y = d3.scaleLinear().domain([0, height]).range([0, height]);
-
     const cellW = d => d.x1 - d.x0;
     const cellH = d => d.y1 - d.y0;
 
-    const sw = d => x(d.x1) - x(d.x0);
-    const sh = d => y(d.y1) - y(d.y0);
+    // precompute a full-canvas layout of each area so a zoom can give even a
+    // hidden, zero-height country a real rectangle to grow into
+    root.descendants().filter(d => d.depth === 2).forEach(area => {
+        const sub = d3.hierarchy(area.data)
+            .sum(d => d.gdp || 0)
+            .sort((a, b) => b.value - a.value);
+
+        d3.treemap()
+            .tile(tile)
+            .size([width, height])
+            .paddingTop(areaHeader)
+            .paddingInner(2)
+            .paddingOuter(0)(sub);
+
+        const byName = new Map(sub.leaves().map(l => [l.data.name, l]));
+        area.leaves().forEach(orig => {
+            const z = byName.get(orig.data.name);
+            orig._zoom = { x0: z.x0, y0: z.y0, x1: z.x1, y1: z.y1 };
+        });
+    });
+
+    const zw = d => d._zoom.x1 - d._zoom.x0;
+    const zh = d => d._zoom.y1 - d._zoom.y0;
 
     // area panels sit behind the countries
     const areaBg = svg.append("g")
@@ -75,7 +92,11 @@ function drawTreemap(data, selector, tile, prefix) {
         .attr("x", d => d.x0)
         .attr("y", d => d.y0)
         .attr("width", cellW)
-        .attr("height", cellH);
+        .attr("height", cellH)
+        .on("click", function (event, area) {
+            // clicking the region itself works even when its country box is hidden
+            zoomTo(zoomedArea === area ? null : area);
+        });
 
     // country cells
     const cell = svg.selectAll("g.cell")
@@ -164,46 +185,66 @@ function drawTreemap(data, selector, tile, prefix) {
 
     let zoomedArea = null;
 
+    // width/height of a cell in the current view (zoomed area vs overview)
+    function viewW(d, area) {
+        return (area && d.parent === area) ? zw(d) : cellW(d);
+    }
+    function viewH(d, area) {
+        return (area && d.parent === area) ? zh(d) : cellH(d);
+    }
+
     function zoomTo(area) {
         zoomedArea = area;
-
-        if (area) {
-            x.domain([area.x0, area.x1]);
-            y.domain([area.y0, area.y1]);
-        } else {
-            x.domain([0, width]);
-            y.domain([0, height]);
-        }
-
         const dur = 600;
 
-        areaBg.transition().duration(dur)
-            .attr("x", d => x(d.x0))
-            .attr("y", d => y(d.y0))
-            .attr("width", sw)
-            .attr("height", sh);
-
+        // country cells: the selected area fills the canvas, the rest fade out
         cell.transition().duration(dur)
-            .attr("transform", d => `translate(${x(d.x0)},${y(d.y0)})`);
+            .style("opacity", d => (!area || d.parent === area) ? 1 : 0)
+            .attr("transform", d => {
+                const r = (area && d.parent === area) ? d._zoom : d;
+                return `translate(${r.x0},${r.y0})`;
+            });
+
+        // faded cells must not intercept clicks meant for the zoomed area
+        cell.style("pointer-events", d => (!area || d.parent === area) ? "all" : "none");
 
         cell.select("rect").transition().duration(dur)
-            .attr("width", sw)
-            .attr("height", sh);
+            .attr("width", d => viewW(d, area))
+            .attr("height", d => viewH(d, area));
 
         cell.select("clipPath rect").transition().duration(dur)
-            .attr("width", sw)
-            .attr("height", sh);
+            .attr("width", d => viewW(d, area))
+            .attr("height", d => viewH(d, area));
 
-        // reveal labels that are now big enough after zooming
+        // reveal a country label once its cell is large enough
         cell.select("text.leaf-label")
-            .text(d => (sw(d) >= 34 && sh(d) >= 18) ? d.data.name : "");
+            .text(d => {
+                if (area && d.parent !== area) return "";
+                return (viewW(d, area) >= 34 && viewH(d, area) >= 18) ? d.data.name : "";
+            });
 
-        [areaGroups, continentGroups].forEach(group => {
-            group.transition().duration(dur)
-                .attr("transform", d => `translate(${x(d.x0)},${y(d.y0)})`);
-            group.select("clipPath rect").transition().duration(dur)
-                .attr("width", sw);
-        });
+        // area panels: the selected one fills the canvas, the rest fade out
+        areaBg.transition().duration(dur)
+            .style("opacity", d => (!area || d === area) ? 1 : 0)
+            .attr("x", d => (area && d === area) ? 0 : d.x0)
+            .attr("y", d => (area && d === area) ? 0 : d.y0)
+            .attr("width", d => (area && d === area) ? width : cellW(d))
+            .attr("height", d => (area && d === area) ? height : cellH(d));
+
+        areaBg.style("pointer-events", d => (!area || d === area) ? "all" : "none");
+
+        // area headers: the selected one spans the top, the rest fade out
+        areaGroups.transition().duration(dur)
+            .style("opacity", d => (!area || d === area) ? 1 : 0)
+            .attr("transform", d => (area && d === area)
+                ? "translate(0,0)"
+                : `translate(${d.x0},${d.y0})`);
+        areaGroups.select("clipPath rect").transition().duration(dur)
+            .attr("width", d => (area && d === area) ? width : cellW(d));
+
+        // continent headers only make sense in the full overview
+        continentGroups.transition().duration(dur)
+            .style("opacity", area ? 0 : 1);
     }
 }
 
