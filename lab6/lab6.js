@@ -33,7 +33,7 @@ function drawTreemap(data, selector, tile, prefix) {
 
     // reserve a top strip on each continent and area for its name
     const continentHeader = 20;
-    const areaHeader = 15;
+    const areaHeader = 10;
 
     d3.treemap()
         .tile(tile)
