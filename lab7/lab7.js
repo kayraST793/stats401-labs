@@ -68,7 +68,13 @@ Promise.all([
     // Region -> horizontal anchor. Each region gets its own vertical band, so
     // companies from the same region stay grouped and the layout keeps its
     // shape from day to day (a group-based force that preserves the mental map).
-    const regionOrder = regions.slice().sort(d3.ascending);
+    // Ordered west-to-east like an Atlantic-centred map (North America, Europe,
+    // Asia), which keeps the neighbouring Europe and Asia bands adjacent.
+    const geoOrder = ["North America", "Europe", "Asia"];
+    const regionOrder = regions.slice().sort((a, b) => {
+        const ia = geoOrder.indexOf(a), ib = geoOrder.indexOf(b);
+        return (ia < 0 ? 99 : ia) - (ib < 0 ? 99 : ib) || d3.ascending(a, b);
+    });
     const regionX = d3.scaleOrdinal()
         .domain(regionOrder)
         .range(regionOrder.map((r, i) =>
@@ -89,9 +95,29 @@ Promise.all([
         .attr("width", width)
         .attr("height", height);
 
-    // Faint region-band labels behind the graph, one per region anchor.
+    // Faint tinted column behind each region, plus its label. The columns sit
+    // at the very back so nodes and links draw on top. Each column reaches to
+    // the midpoint between neighbouring band anchors.
     const bandG = svg.append("g").attr("class", "region-bands");
-    regionOrder.forEach(r => {
+
+    const bandCenters = regionOrder.map(r => regionX(r));
+    regionOrder.forEach((r, i) => {
+        const left = i === 0
+            ? 0
+            : (bandCenters[i - 1] + bandCenters[i]) / 2;
+        const right = i === regionOrder.length - 1
+            ? width
+            : (bandCenters[i] + bandCenters[i + 1]) / 2;
+
+        bandG.append("rect")
+            .attr("class", "region-band-bg")
+            .attr("x", left)
+            .attr("y", 0)
+            .attr("width", right - left)
+            .attr("height", height)
+            .attr("fill", regionStroke(r))
+            .attr("fill-opacity", 0.12);
+
         bandG.append("text")
             .attr("class", "region-band")
             .attr("x", regionX(r))
@@ -139,7 +165,7 @@ Promise.all([
     const simulation = d3.forceSimulation(companies)
         .force("link", d3.forceLink([]).id(d => d.id).distance(95).strength(0.5))
         .force("charge", d3.forceManyBody().strength(-320))
-        .force("x", d3.forceX(d => regionX(d.region)).strength(0.18))
+        .force("x", d3.forceX(d => regionX(d.region)).strength(0.3))
         .force("y", d3.forceY(height / 2).strength(0.06))
         .force("collision", d3.forceCollide().radius(d => currentRadius(d) + 6));
 
