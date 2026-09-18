@@ -4,13 +4,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Lab 7: <NAME></title>
+    <title>Lab 7: Temporal Data Visualization</title>
 
     <link rel="stylesheet"
           href="../css/style.css">
 </head>
 
-<body>
+<body class="wide">
 
 <header>
     <h1>STATS 401</h1>
@@ -32,19 +32,200 @@
 
 <main>
 
-    <h1>Lab 7</h1>
-    <h2>Lab 7: <NAME></h2>
-
-    <p>
-        Lab 7 will be added here.
+    <h2>Lab 7: Animated Temporal Commercial Network</h2>
+    <p class="subtitle">
+        Twelve companies trade with one another over 60 days. The network below
+        redraws itself as time moves, so you can watch relationships appear,
+        disappear, and change strength.
     </p>
+
+    <h2>Dataset</h2>
+    <p>
+        Each <strong>company</strong> is a node with a sector (Manufacturing,
+        Logistics, Retail, Technology, Food, Wholesale, Materials) and a region
+        (Asia, Europe, North America). Each <strong>transaction</strong> is an
+        undirected link between two companies on a given day, with a dollar
+        amount, a type (goods, shipping, components, materials, services), and a
+        transaction count. The data run from 2026-01-01 (day 1) to 2026-03-01
+        (day 60) and are fabricated for visualization practice.
+    </p>
+
+    <h2>Network</h2>
+    <p class="chart-note">
+        Press Play to animate the 60 days, or drag the slider to inspect one
+        day. Drag a node to reposition it; hover a node or link for details.
+    </p>
+
+    <div class="controls">
+        <button id="play">Play</button>
+        <button id="pause">Pause</button>
+        <button id="reset">Reset</button>
+        <label for="speed">Speed:</label>
+        <select id="speed">
+            <option value="900">Slow</option>
+            <option value="450" selected>Normal</option>
+            <option value="200">Fast</option>
+        </select>
+        <input type="range" id="time-slider" min="1" max="60" value="1">
+        <span id="day-label" class="day-label">Day 1 of 60</span>
+    </div>
+
+    <div id="summary" class="summary">
+        <span class="summary-item">Active companies: <strong id="active-companies">0</strong></span>
+        <span class="summary-item">Active links: <strong id="active-links">0</strong></span>
+        <span class="summary-item">Total value: <strong id="total-value">$0</strong></span>
+    </div>
+
+    <div id="legend"></div>
+    <div id="chart"></div>
+
+    <h3>Design</h3>
+    <p class="design-text">
+        Six channels carry the data so a single day can be read at a glance and
+        the changes between days stay visible.
+    </p>
+    <table class="map-table">
+        <thead>
+            <tr><th>Variable</th><th>Channel</th><th>Why it fits</th></tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>Sector</td>
+                <td>Node fill colour</td>
+                <td>Sector is categorical. Colour is quick to scan and groups companies of the same kind without ranking them.</td>
+            </tr>
+            <tr>
+                <td>Region</td>
+                <td>Node outline colour</td>
+                <td>Region is also categorical. Keeping it on the outline leaves the fill free for sector, so both node variables read at once.</td>
+            </tr>
+            <tr>
+                <td>Current volume</td>
+                <td>Node size (square-root)</td>
+                <td>Volume is a quantity that changes each day. A square-root scale keeps node area proportional to the value, so busy companies grow honestly.</td>
+            </tr>
+            <tr>
+                <td>Trading today</td>
+                <td>Node outline weight</td>
+                <td>A thicker outline marks the companies active on the current day, which separates them from idle nodes that stay in place.</td>
+            </tr>
+            <tr>
+                <td>Amount</td>
+                <td>Link width</td>
+                <td>Amount is a quantity, and a thicker line reads as a larger trade.</td>
+            </tr>
+            <tr>
+                <td>Transaction type</td>
+                <td>Link colour</td>
+                <td>Type is categorical, so a colour separates the five kinds of trade without implying an order.</td>
+            </tr>
+        </tbody>
+    </table>
+    <p class="design-text">Two ideas keep the animation readable:</p>
+    <ul class="design-list">
+        <li>
+            The twelve node objects are created once and reused every day, and
+            the simulation is only reheated gently, so a company stays in roughly
+            the same place from one day to the next. A group-based force also
+            anchors each company toward a vertical band for its region (Asia,
+            Europe, North America), so the three regions hold their own zones and
+            the layout keeps its shape as time moves. Together these preserve the
+            mental map.
+        </li>
+        <li>
+            A new relationship flashes to full strength for a moment and then
+            settles, while a finished one fades out, so the eye can catch which
+            links appear and disappear rather than seeing the whole graph blink.
+            A large day label on the chart keeps the current day prominent.
+        </li>
+    </ul>
+
+    <h2>Network Questions &amp; Findings</h2>
+    <p class="chart-note">
+        Each answer is read from the animation above, supported by the encodings
+        and the daily summary panel.
+    </p>
+
+    <div id="qa">
+
+        <div class="qa">
+            <p class="qa-q">1. How does overall network connectivity change across the 60 days?</p>
+            <p>
+                The network gets busier over the two months. On a quiet day only three
+                pairs trade; on a busy day there are ten. The daily average rises from
+                about 5.5 links in the first half to 6.7 in the second, the number of
+                companies trading on a given day grows from roughly 8 to 9 out of 12,
+                and the total value moving each day climbs from about $84,000 to
+                $129,000. So both the count of relationships and the money flowing
+                through them trend upward as the period goes on.
+            </p>
+        </div>
+
+        <div class="qa">
+            <p class="qa-q">2. Which companies become more central or commercially active over time?</p>
+            <p>
+                Fusion Electronics (C06) is the steady hub. It trades on more days than
+                anyone else and carries the largest total volume, so it is usually the
+                biggest node on screen. The clearest risers are Ion Systems (C09) and
+                Cedar Retail (C03): each roughly triples its volume between the first and
+                second halves, growing from a small dot early on to one of the largest
+                nodes late in the animation. Apex Textiles (C01) also picks up. A few
+                companies stay quiet throughout, for example Keystone Materials (C11) and
+                Lumen Distribution (C12), which appear only occasionally.
+            </p>
+        </div>
+
+        <div class="qa">
+            <p class="qa-q">3. Are there periods when the network consists of relatively separate clusters?</p>
+            <p>
+                The network is never a single connected whole. Every one of the 60 days
+                splits into two to four separate clusters, about three on average. A
+                typical day shows one larger group of four or five companies trading
+                together, plus a couple of isolated pairs off to the side and some idle
+                nodes with no links at all. The fragmentation eases slightly as the
+                period densifies (from about 2.9 clusters early to 2.7 late), but the
+                graph still does not join into one component on any day.
+            </p>
+        </div>
+
+        <div class="qa">
+            <p class="qa-q">4. Which commercial relationships appear, disappear, or become stronger over time?</p>
+            <p>
+                Only 27 of the 66 possible pairs ever trade, and none of them are
+                one-offs: every relationship that exists comes back on several days. So
+                the day-to-day fading in and out is a fixed backbone of about two dozen
+                relationships taking turns, not random new partners. Among the recurring
+                pairs, the ones that grow most are Fusion Electronics and Granite
+                Wholesale (C06-C07), whose average trade rises from about $15,000
+                to $25,000, and Ion Systems and Juniper Stores (C09-C10), rising
+                from about $13,000 to $20,000. A few edge down slightly, such as Fusion
+                Electronics and Harbor Shipping (C06-C08), but the overall drift is
+                toward stronger trades.
+            </p>
+        </div>
+
+        <div class="qa">
+            <p class="qa-q">5. Does the network become more or less cross-regional over time?</p>
+            <p>
+                It becomes more cross-regional. Two-thirds of all trades already cross a
+                region boundary, and that share rises from about 0.59 in the first half
+                to 0.69 in the second. Trade within a single region is the minority.
+                The busiest corridor by far is Asia to Europe, followed by Asia to North
+                America and Europe to North America. So over the 60 days the companies
+                increasingly do business outside their own region rather than close to
+                home.
+            </p>
+        </div>
+
+    </div>
 
     <a class="back" href="../index.html">← Back to home</a>
 </main>
 
+<div id="tooltip" class="tooltip"></div>
+
 <script src="https://cdn.jsdelivr.net/npm/d3@7"></script>
-<!-- Place the .js file here -->
-<!-- <script src="js/lab#.js"></script> -->
+<script src="lab7.js"></script>
 
 </body>
 
