@@ -53,7 +53,8 @@
     <h2>Network</h2>
     <p class="chart-note">
         Press Play to animate the 60 days, or drag the slider to inspect one
-        day. Drag a node to reposition it; hover a node or link for details.
+        day. Use the speed control to slow the animation down or speed it up.
+        Drag a node to reposition it; hover a node or link for details.
     </p>
 
     <div class="controls">
@@ -76,7 +77,7 @@
         <span class="summary-item">Total value: <strong id="total-value">$0</strong></span>
     </div>
 
-    <div id="legend"></div>
+    <div id="legend" class="legend-compact"></div>
     <div id="chart"></div>
 
     <h3>Design</h3>
@@ -96,8 +97,8 @@
             </tr>
             <tr>
                 <td>Region</td>
-                <td>Node outline colour</td>
-                <td>Region is also categorical. Keeping it on the outline leaves the fill free for sector, so both node variables read at once.</td>
+                <td>Node outline colour, plus horizontal band and a faint background tint</td>
+                <td>Region is categorical. The outline colour leaves the fill free for sector, and a group-based force parks each region in its own vertical band (North America, Europe, Asia) with a faint matching tint behind it, so the grouping reads at a glance and cross-region links are easy to spot.</td>
             </tr>
             <tr>
                 <td>Current volume</td>
@@ -127,10 +128,10 @@
             The twelve node objects are created once and reused every day, and
             the simulation is only reheated gently, so a company stays in roughly
             the same place from one day to the next. A group-based force also
-            anchors each company toward a vertical band for its region (North
-            America, Europe, Asia), so the three regions hold their own zones and
-            the layout keeps its shape as time moves. Together these preserve the
-            mental map.
+            anchors each company toward a vertical band for its region, ordered
+            west to east (North America, Europe, Asia) with a faint tint behind
+            each band, so the three regions hold their own zones and the layout
+            keeps its shape as time moves. Together these preserve the mental map.
         </li>
         <li>
             A new relationship flashes to full strength for a moment and then
