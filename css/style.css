@@ -674,6 +674,10 @@ body.wide #legend {
     pointer-events: none;
 }
 
+.network-svg .region-band-bg {
+    pointer-events: none;
+}
+
 .network-svg .day-canvas-label {
     font-size: 22px;
     font-weight: 700;
