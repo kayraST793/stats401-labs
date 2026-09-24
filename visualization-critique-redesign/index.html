@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Visualization Critique and Redesign</title>
+
+    <link rel="stylesheet"
+          href="../css/style.css">
+</head>
+
+<body class="wide">
+
+<header>
+    <h1>STATS 401</h1>
+    <p>Data Acquisition and Visualization</p>
+</header>
+
+<main>
+
+    <h2>Visualization Critique and Redesign</h2>
+    <p class="subtitle">
+        A critique of a dual-axis line chart from FRED that plots the Federal
+        Funds Rate against the Consumer Price Index, and a redesigned version
+        built with D3 that puts both series on an honest, comparable footing.
+    </p>
+
+    <h2>Original Visualization</h2>
+    <p>
+        The original is a FRED graph that overlays two series on one time axis
+        using two separate y-axes: the Federal Funds Effective Rate on the left
+        (percent) and the Consumer Price Index for All Urban Consumers on the
+        right (index, 1982-84 = 100).
+    </p>
+
+    <figure class="figure">
+        <img src="images/original-dual-axis.png"
+             alt="FRED dual-axis chart of the Federal Funds Rate and the Consumer Price Index"
+             class="figure-img">
+        <figcaption>
+            Original: FRED dual-axis chart. Federal Funds Effective Rate (left,
+            percent) and Consumer Price Index (right, index 1982-84 = 100).
+            Source: Federal Reserve Bank of St. Louis, FRED, series FEDFUNDS and
+            CPIAUCSL.
+        </figcaption>
+    </figure>
+
+    <h3>Data and source</h3>
+    <ul class="design-list">
+        <li>
+            <strong>Source tool:</strong>
+            <a href="https://fred.stlouisfed.org/graph/?id=FEDFUNDS,CPIAUCSL"
+               target="_blank" rel="noopener">FRED (fred.stlouisfed.org)</a>
+        </li>
+        <li>
+            <strong>Series:</strong> FEDFUNDS (Federal Funds Effective Rate,
+            percent) and CPIAUCSL (Consumer Price Index for All Urban Consumers,
+            index 1982-84 = 100), monthly.
+        </li>
+        <li>
+            <strong>Dataset used here:</strong> <code>data/fred_fedfunds_cpi.csv</code>
+            (columns <code>observation_date, FEDFUNDS, CPIAUCSL, USREC</code>).
+        </li>
+    </ul>
+
+    <h2>Redesign</h2>
+    <p class="chart-note">
+        Both series are shown as annual percentages on one shared axis: the
+        Federal Funds Rate and consumer price inflation measured as the
+        year-over-year change in the CPI. Shaded bands mark NBER recessions.
+        Hover for the exact values in any month.
+    </p>
+    <div id="chart"></div>
+
+    <h2>Critique and Redesign Report</h2>
+
+    <h3>Original visualization and context</h3>
+    <p class="report-text">
+        The original is a FRED graph that overlays two monthly economic series on
+        a shared time axis using two independent y-axes: the Federal Funds
+        Effective Rate (left, percent) and the Consumer Price Index (right, index
+        1982-84 = 100). Its implied message is that monetary policy and
+        prices move together over time. The audience is an economically literate
+        general reader: students, journalists, and analysts browsing FRED.
+        The tasks it supports are reading each series' trend, comparing their
+        timing, and locating notable episodes such as the early-1980s rate peak.
+    </p>
+
+    <h3>Critique</h3>
+    <p class="report-text">
+        <strong>Strengths.</strong> First, the chart uses authoritative,
+        well-sourced data and a shared, clearly labelled time axis, so the
+        horizontal position channel is used correctly and both series cover the
+        same span. Second, recession shading and a clean, uncluttered layout give
+        useful context and keep the data-ink ratio high.
+    </p>
+    <p class="report-text">
+        <strong>Weaknesses.</strong> First, the two independent y-axes manufacture
+        a false relationship. The apparent crossings and gaps between the two
+        lines are artifacts of where FRED set each axis's range, not facts about
+        the data; sliding either axis changes the story. Because dual axes have no
+        principled alignment, any perceived correlation is unreliable. Second, the
+        series use incompatible units on channels that invite direct comparison: a
+        percent (0-20) and an index (0-400) share the vertical space,
+        so length and position, the channels a reader instinctively
+        compares, encode unrelated quantities. Third, the CPI is shown as a
+        level, which only ever rises. The quantity that actually relates to the
+        policy rate is the inflation <em>rate</em>, not the price level, so the
+        chart hides the very relationship it seems to assert; the reader must also
+        hunt for small "(left)/(right)" tags to know which axis each
+        line uses, adding cognitive load.
+    </p>
+
+    <h3>Redesign rationale</h3>
+    <p class="report-text">
+        The redesign is a single line chart that places both series on one shared
+        percent axis. Three decisions drive it. First, I convert the CPI into
+        year-over-year inflation (the twelve-month percent change). This turns an
+        ever-rising level into a rate, addressing the third weakness and exposing
+        the inflation-policy relationship. Second, because both series are
+        now measured in percent per year, I plot them on one honest, zero-based
+        axis. This removes the dual-axis trick (first weakness) and puts the two
+        comparable quantities on the same length and position scale (second
+        weakness), so crossings and gaps are now real. Third, I remove encoding
+        ambiguity by labelling each line directly at its right end and adding a
+        shared hover readout: a vertical guide, a dot per series, and a
+        tooltip with the exact monthly values; a dashed zero line clarifies that
+        inflation can fall below zero while the rate cannot.
+    </p>
+
+    <h3>Original vs. redesign</h3>
+    <p class="report-text">
+        After the redesign, comparison tasks that were unreliable become sound. A
+        reader can see that the Federal Reserve tends to raise the funds rate when
+        inflation is high and cut it when inflation falls, visible in the
+        tandem 1970s climbs, the early-1980s peak, the near-zero period after
+        2008, and the 2022 tightening. Because both lines share one axis, the
+        vertical gap between them is now meaningful (roughly the real interest
+        rate), which the original could not show at all. Direct labels and the
+        tooltip let a viewer read precise values without decoding two axes. The
+        redesign also keeps the NBER recession shading from the original, and on
+        the shared axis it reveals a pattern the dual-axis version could not:
+        recessions tend to follow episodes where the funds rate is pushed above
+        inflation, as in 1980-82, 1990, and 2007-08.
+    </p>
+    <p class="report-text">
+        Trade-offs remain. Year-over-year inflation introduces a twelve-month lag
+        and is noisier than the smooth index, so the first year of data is dropped
+        and short-term swings are more visible. Collapsing to one axis also
+        sacrifices the exact price-level reading the original provided, which some
+        readers may want. These are reasonable costs for a chart that compares the
+        two series honestly.
+    </p>
+
+    <h2>References</h2>
+    <ul class="design-list">
+        <li>
+            Federal Reserve Bank of St. Louis, FRED, Federal Funds Effective Rate
+            [FEDFUNDS], https://fred.stlouisfed.org/series/FEDFUNDS
+        </li>
+        <li>
+            Federal Reserve Bank of St. Louis, FRED, Consumer Price Index for All
+            Urban Consumers: All Items in U.S. City Average [CPIAUCSL],
+            https://fred.stlouisfed.org/series/CPIAUCSL
+        </li>
+        <li>
+            Federal Reserve Bank of St. Louis, FRED, NBER-based Recession
+            Indicators [USREC], https://fred.stlouisfed.org/series/USREC
+        </li>
+    </ul>
+
+    <a class="back" href="../index.html">← Back to home</a>
+</main>
+
+<div id="tooltip" class="tooltip"></div>
+
+<script src="https://cdn.jsdelivr.net/npm/d3@7"></script>
+<script src="project.js"></script>
+
+</body>
+
+</html>
