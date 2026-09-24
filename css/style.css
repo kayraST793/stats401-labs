@@ -717,3 +717,91 @@ body.wide #legend {
     border-top: 1px solid var(--line);
     padding-top: 6px;
 }
+
+/* Individual project - critique and redesign */
+.figure {
+    margin: 16px 0 20px;
+}
+
+.figure-img {
+    max-width: 100%;
+    height: auto;
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    background: #fff;
+}
+
+.figure figcaption {
+    font-size: 13px;
+    color: var(--muted);
+    margin-top: 8px;
+    max-width: 900px;
+}
+
+/* Individual project - redesign chart */
+.redesign-svg {
+    border: 1px solid var(--line);
+    border-radius: 10px;
+    background: #fff;
+}
+
+.redesign-svg .series-line {
+    fill: none;
+    stroke-width: 2;
+}
+
+.redesign-svg .zero-line {
+    stroke: #999;
+    stroke-width: 1;
+    stroke-dasharray: 3 3;
+}
+
+.redesign-svg .recession-band {
+    fill: #cbd2d9;
+    fill-opacity: 0.45;
+}
+
+.redesign-svg .series-label {
+    font-size: 12px;
+    font-weight: 600;
+}
+
+.redesign-svg .axis-title {
+    font-size: 12px;
+    fill: var(--muted);
+}
+
+.redesign-svg .overlay {
+    fill: none;
+    pointer-events: all;
+    cursor: crosshair;
+}
+
+.redesign-svg .focus-line {
+    stroke: #999;
+    stroke-width: 1;
+    stroke-dasharray: 3 3;
+}
+
+.redesign-svg .focus-dot {
+    stroke: #fff;
+    stroke-width: 1.5;
+}
+
+.report-text {
+    max-width: 820px;
+    color: var(--ink);
+    line-height: 1.6;
+    margin: 8px 0;
+}
+
+/* Home page - individual project tab */
+.lab-nav a.project-tab {
+    background: #1f2328;
+    color: #fff;
+    font-weight: 600;
+}
+
+.lab-nav a.project-tab:hover {
+    background: #000;
+}
