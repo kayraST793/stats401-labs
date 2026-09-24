@@ -797,11 +797,21 @@ body.wide #legend {
 
 /* Home page - individual project tab */
 .lab-nav a.project-tab {
-    background: #1f2328;
-    color: #fff;
+    background: #eaf2fc;
+    color: #1a4d80;
+    border: 1px solid #9dc0e8;
     font-weight: 600;
 }
 
 .lab-nav a.project-tab:hover {
-    background: #000;
+    background: #1f77b4;
+    border-color: #1f77b4;
+    color: #fff;
+}
+
+/* Current-page indicator for the project tab */
+.lab-nav a.project-tab.active {
+    background: #1f77b4;
+    border-color: #1f77b4;
+    color: #fff;
 }
