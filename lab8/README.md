@@ -6,19 +6,6 @@ page connects the document's formal structure (parts, sections, pages) with its
 semantic structure (passages grouped by meaning) through two coordinated views:
 a semantic embedding map and a Topic by Section matrix.
 
-## View it
-
-Serve the repository root and open the page in a browser:
-
-```
-python -m http.server 8080
-```
-
-- Assignment: http://localhost:8080/lab8/index.html
-- Task walkthrough (tutorial steps 1-15): http://localhost:8080/lab8/index_tasks.html
-
-The page loads D3 v7 from a CDN, so an internet connection is needed.
-
 ## Files
 
 Web (required to run the assignment):
