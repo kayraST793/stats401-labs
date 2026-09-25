@@ -815,3 +815,25 @@ body.wide #legend {
     border-color: #1f77b4;
     color: #fff;
 }
+
+/* Lab 8 - bulletin explorer */
+#map-detail {
+    margin-top: 14px;
+    min-height: 90px;
+}
+
+#embed-map,
+#matrix {
+    overflow-x: auto;
+}
+
+#map-detail .map-table {
+    margin: 6px 0 0;
+}
+
+/* Lab 8 - assignment subsection headings */
+.subhead {
+    margin: 22px 0 8px;
+    color: #1f3864;
+    font-size: 16px;
+}
