@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Lab 8: <NAME></title>
+    <title>Lab 8: Web Text Data and Visualization</title>
 
     <link rel="stylesheet"
           href="../css/style.css">
@@ -35,19 +35,225 @@
 
 <main>
 
-    <h1>Lab 8</h1>
-    <h2>Lab 8: <NAME></h2>
-
-    <p>
-        Lab 8 will be added here.
+    <h2>Lab 8: Web Text Data and Visualization</h2>
+    <p class="subtitle">
+        Interactive exploration of the Duke Kunshan University Undergraduate
+        Bulletin, connecting the document's formal structure (parts, sections,
+        pages) with its semantic structure (passages grouped by meaning).
     </p>
 
-    <a class="back" href="../index.html">← Back to home</a>
+    <section>
+        <h3>1. Corpus</h3>
+        <dl class="dataset-meta">
+            <dt>Document</dt>
+            <dd>Bulletin of Duke Kunshan University Undergraduate Instruction</dd>
+            <dt>Version</dt>
+            <dd>V2021-22</dd>
+            <dt>Source</dt>
+            <dd>Official DKU admissions file, V2021-22_DKU_UG_Bulletin.pdf (about 400 pages)</dd>
+            <dt>Accessed</dt>
+            <dd>25 September 2026</dd>
+        </dl>
+        <p>
+            The PDF was split into paragraph sized passages. Each passage keeps its
+            chapter (Part), section, subsection, and page, read from the built in
+            table of contents by locating every heading on its page. Cleaning
+            repaired characters, merged paragraphs broken across page breaks, and
+            removed duplicated boilerplate.
+        </p>
+        <div id="corpus-stats" class="summary"></div>
+    </section>
+
+    <section>
+        <h3>2. Corpus overview</h3>
+        <p>Three summaries give a sense of the corpus before any semantic modelling.</p>
+
+        <p class="chart-note">Passages by formal section (top 15). Course Descriptions dominates.</p>
+        <div id="bar-sections"></div>
+
+        <p class="chart-note">Passage length in words. The distribution is right skewed, with a median near 79.</p>
+        <div id="hist-length"></div>
+
+        <p class="chart-note">Most distinctive terms by mean TF-IDF. Very common bulletin words are treated as stop words.</p>
+        <div id="bar-terms"></div>
+    </section>
+
+    <section>
+        <h3>3. Semantic embedding map</h3>
+
+        <h4 class="subhead">Method: how the map and topics were produced</h4>
+        <ul>
+            <li><strong>Embeddings.</strong> Each passage was encoded with the
+                all-MiniLM-L6-v2 sentence transformer into a 384 dimensional vector,
+                L2 normalised.</li>
+            <li><strong>Projection.</strong> UMAP reduced the vectors to two
+                dimensions for the map (cosine metric, 15 neighbours, min_dist 0.15,
+                random_state 401). Proximity is meaningful; the axes are not.</li>
+            <li><strong>Clustering.</strong> k-means on the full 384 dimensional
+                vectors, k = 8. A silhouette scan over 6, 8, 10, 12 gave similar low
+                scores, and 8 produced the clearest topics.</li>
+            <li><strong>Labels.</strong> Each cluster was named from its
+                characteristic TF-IDF terms and the passages nearest its centre, then
+                bound to distinctive terms so the naming is reproducible.</li>
+        </ul>
+
+        <h4 class="subhead">The interactive map</h4>
+        <p>
+            One point is one passage. Position is the UMAP embedding, colour is the
+            semantic topic, and circle size is passage length in words. Click a
+            passage for its details and to ring its five nearest neighbours. Use the
+            search box, the topic filter, the section filter, and zoom or pan to
+            focus on a region.
+        </p>
+        <div class="controls">
+            <input type="text" id="map-search" placeholder="Search bulletin...">
+            <label for="map-topic">Topic:</label>
+            <select id="map-topic"></select>
+            <label for="map-section">Section:</label>
+            <select id="map-section"></select>
+            <button id="map-reset">Reset</button>
+        </div>
+        <div id="map-legend" class="legend legend-compact"></div>
+        <div id="embed-map"></div>
+        <div id="map-detail" class="card">Click a point to see the passage.</div>
+    </section>
+
+    <section>
+        <h3>4. Topic by Section matrix</h3>
+        <p>
+            Rows are the 20 largest formal sections, columns are the eight semantic
+            topics, and a darker cell holds more passages. Hover a cell for the exact
+            section, topic, and count. The matrix shows which sections are focused on
+            a single topic and which are diverse.
+        </p>
+        <div id="matrix-legend" class="legend legend-compact"></div>
+        <div id="matrix"></div>
+
+        <h4 class="subhead">Coordinating the two views</h4>
+        <p>
+            The two views are linked. Click a matrix cell and the map filters to that
+            section and topic. Click a point on the map and its cell is outlined in
+            the matrix. This lets you move between where a passage sits in the
+            bulletin and what it means.
+        </p>
+    </section>
+
+    <section>
+        <h3>5. Findings</h3>
+
+        <p class="chart-note">
+            Each pattern below was noticed in the two views and then measured against
+            the underlying passages. The counts come from a text query over the 1100
+            passages, and can be checked in the map above by searching or filtering.
+        </p>
+
+        <div class="qa">
+            <p class="qa-q">What are the major semantic topics?</p>
+            <p>
+                Eight topics emerged. Four are course content (Politics, Society and
+                Ethics 244; Arts, Humanities and Media 198; Quantitative and Computing
+                Sciences 154; Natural and Life Sciences 72) and four are
+                administrative policy (Transfer Credit and Study Away 128; Curriculum
+                and Degree Structure 124; Academic Standing and Withdrawal 92;
+                Advanced Placement and Grading 88).
+            </p>
+        </div>
+
+        <div class="qa">
+            <p class="qa-q">Which topics appear across multiple formal sections?</p>
+            <p>
+                The administrative topics are cross cutting. Transfer Credit and Study
+                Away appears in 51 different sections, Academic Standing in 26,
+                Advanced Placement in 23, and Curriculum in 19. The course content
+                topics are concentrated in Course Descriptions and Majors (Natural
+                Sciences in 2 sections, Arts in 4, Politics in 6, Quantitative in 7).
+            </p>
+        </div>
+
+        <div class="qa">
+            <p class="qa-q">Which formal sections are most semantically diverse?</p>
+            <p>
+                Course Descriptions spans all seven course and quantitative topics
+                across 647 passages, and Majors spans six. After those, Degree
+                Requirements, Grading and Grade Requirements, Undergraduate Course
+                Load, Office of Global Education and Study Away, and Estimated Expenses
+                each mix four topics.
+            </p>
+        </div>
+
+        <div class="qa">
+            <p class="qa-q">Which passages from different sections are semantically similar?</p>
+            <p>
+                The two Academic Warning, Probation, and Suspension sections (one for
+                the classes of 2022-2024, one for the class of 2025 and beyond) hold
+                near identical probation text (cosine about 0.99), the same policy
+                duplicated for two cohorts. Grading and Grade Requirements sits close
+                to Office of Global Education and Study Away (0.96) on study abroad
+                credit, and Transfer of Work Taken Elsewhere matches Office of Global
+                Education (0.92) on the 40 credit transfer cap. A keyword search across
+                separate chapters would miss these links.
+            </p>
+        </div>
+
+        <div class="qa">
+            <p class="qa-q">Where does the word "credit" occur across the bulletin?</p>
+            <p>
+                "credit" appears in 159 passages spread across all eight topics,
+                concentrated in Advanced Placement and Grading (65), Transfer Credit
+                and Study Away (39), and Curriculum and Degree Structure (31). It is
+                not one semantic region but a thread through several administrative
+                topics. By contrast "academic integrity" appears in only 3 passages,
+                so it is a short heading rather than a large theme. To see this in the
+                map, type "credit" into the search box above: the highlighted passages
+                spread across the right side administrative topics instead of forming a
+                single cluster.
+            </p>
+        </div>
+    </section>
+
+    <section>
+        <h3>6. Design description</h3>
+        <p class="report-text">
+            The corpus is the 2021-22 Duke Kunshan University Undergraduate Bulletin,
+            a document of about 400 pages. I split it into paragraph sized passages
+            and kept each passage's chapter, section, subsection, and page by reading
+            the PDF's built in table of contents and locating every heading on its
+            page. After cleaning, which repaired characters, merged paragraphs broken
+            across page breaks, and dropped duplicated boilerplate, 1100 passages
+            remained.
+        </p>
+        <p class="report-text">
+            Each passage was encoded with the all-MiniLM-L6-v2 sentence transformer
+            into a 384 dimensional vector. I reduced those vectors to two dimensions
+            with UMAP (cosine metric, 15 neighbours, minimum distance 0.15, seed 401)
+            for the map, and clustered the full 384 dimensional vectors with k-means
+            using eight clusters. Each cluster was labelled from its most
+            characteristic TF-IDF terms and the passages closest to its centre. To
+            avoid naming clusters by an arbitrary index, each label is tied to
+            distinctive terms the cluster must contain, so a rerun relabels correctly
+            or stops.
+        </p>
+        <p class="report-text">
+            The map encodes position as the UMAP embedding, colour as the topic, and
+            circle size as passage length. Clicking a passage shows its details and
+            rings its five nearest neighbours, which often sit in different formal
+            sections. Search, a topic filter, a section filter, and zoom help focus on
+            a region. The second view is a Topic by Section matrix whose shading shows
+            how many passages fall in each pairing. The two views are coordinated:
+            clicking a matrix cell filters the map to that section and topic, and
+            selecting a map point outlines its cell. This connects where a passage
+            sits in the bulletin with what it means, which a single scatter plot
+            cannot do.
+        </p>
+    </section>
+
+    <a class="back" href="../index.html">Back to home</a>
 </main>
 
+<div id="tooltip" class="tooltip"></div>
+
 <script src="https://cdn.jsdelivr.net/npm/d3@7"></script>
-<!-- Place the .js file here -->
-<!-- <script src="js/lab#.js"></script> -->
+<script src="lab8.js"></script>
 
 </body>
 
