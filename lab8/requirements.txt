@@ -1,0 +1,15 @@
+# Lab 8 - Python pipeline dependencies
+# Rebuilds the data files in ../data from the DKU bulletin PDF.
+#
+# Steps 1-3 and 5-8 (extract, clean, embed, cluster, neighbours, analyse,
+# export) run in one environment with the packages below.
+#
+# Step 4 (umap_project.py) needs umap-learn. On Windows ARM64 it has no
+# native wheel, so it must run from a separate x64 (emulated) Python; on
+# x86-64 or Linux it installs directly alongside the rest.
+
+pandas==3.0.5
+pymupdf==1.28.2
+scikit-learn==1.9.0
+sentence-transformers==6.1.0
+umap-learn==0.5.12
