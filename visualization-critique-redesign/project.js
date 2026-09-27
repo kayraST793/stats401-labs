@@ -74,13 +74,13 @@ function drawChart(data, recessions) {
     svg.append("text")
         .attr("class", "chart-title")
         .attr("x", margin.left)
-        .attr("y", 25)
+        .attr("y", 35)
         .text("Federal Funds Rate vs. U.S. Inflation, 1955–2026");
     
     // Chart subtitle.
     svg.append("text")
         .attr("class", "chart-subtitle")
-        .attr("x", margin.left).attr("y", 45)
+        .attr("x", margin.left).attr("y", 60)
         .text("Monthly federal funds rate and year-over-year CPI inflation");
 
     const xScale = d3.scaleTime()
@@ -115,7 +115,7 @@ function drawChart(data, recessions) {
     // Label for recession shading.
     svg.append("text")
         .attr("class", "recession-label")
-        .attr("x", width - margin.right - 15)
+        .attr("x", width - margin.right - 25)
         .attr("y", 100)
         .text("Shaded areas: U.S. recessions");
     
