@@ -743,6 +743,7 @@ body.wide #legend {
     border: 1px solid var(--line);
     border-radius: 10px;
     background: #fff;
+    font-family: Arial, sans-serif;
 }
 
 .redesign-svg .series-line {
