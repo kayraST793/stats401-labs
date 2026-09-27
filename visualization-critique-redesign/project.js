@@ -62,7 +62,7 @@ function drawChart(data, recessions) {
 
     const width = 1000;
     const height = 500;
-    const margin = { top: 30, right: 130, bottom: 50, left: 60 };
+    const margin = { top: 30, right: 140, bottom: 50, left: 60 };
 
     const svg = d3.select("#chart")
         .append("svg")
@@ -102,8 +102,8 @@ function drawChart(data, recessions) {
     // Label for recession shading.
     svg.append("text")
         .attr("class", "recession-label")
-        .attr("x", margin.right + 8)
-        .attr("y", height - margin.top + 20)
+        .attr("x", width - margin.right + 8)
+        .attr("y", margin.top + 20)
         .text("Shaded areas: U.S. recessions");
     
     // Axes.
