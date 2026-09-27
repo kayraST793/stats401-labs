@@ -102,9 +102,8 @@ function drawChart(data, recessions) {
     // Label for recession shading.
     svg.append("text")
         .attr("class", "recession-label")
-        .attr("x", width - margin.right - 5)
-        .attr("y", margin.top + 15)
-        .attr("text-anchor", "end")
+        .attr("x", margin.left + 8)
+        .attr("y", height - margin.bottom - 10)
         .text("Shaded areas: U.S. recessions");
     
     // Axes.
