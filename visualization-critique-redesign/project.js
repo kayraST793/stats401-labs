@@ -98,6 +98,15 @@ function drawChart(data, recessions) {
             xScale(r.start < domainStart ? domainStart : r.start))
         .attr("height", height - margin.top - margin.bottom);
 
+
+    // Label for recession shading.
+    svg.append("text")
+        .attr("class", "recession-label")
+        .attr("x", width - margin.right - 5)
+        .attr("y", margin.top + 15)
+        .attr("text-anchor", "end")
+        .text("Shaded areas: U.S. recessions");
+    
     // Axes.
     svg.append("g")
         .attr("transform", `translate(0,${height - margin.bottom})`)
