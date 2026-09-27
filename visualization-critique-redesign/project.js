@@ -145,7 +145,7 @@ function drawChart(data, recessions) {
         svg.append("text")
             .attr("class", "series-label")
             .attr("x", width - margin.right + 8)
-            .attr("y", yScale(last[s.key]))
+            .attr("y", yScale(last[s.key]) + labelOffset)
             .attr("dy", "0.32em")
             .attr("fill", s.color)
             .text(s.endLabel);
