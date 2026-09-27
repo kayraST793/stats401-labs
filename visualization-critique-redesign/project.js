@@ -62,13 +62,26 @@ function drawChart(data, recessions) {
 
     const width = 1000;
     const height = 500;
-    const margin = { top: 30, right: 140, bottom: 50, left: 60 };
+    const margin = { top: 75, right: 140, bottom: 50, left: 60 };
 
     const svg = d3.select("#chart")
         .append("svg")
         .attr("class", "redesign-svg")
         .attr("width", width)
         .attr("height", height);
+
+    // Chart title.
+    svg.append("text")
+        .attr("class", "chart-title")
+        .attr("x", margin.left)
+        .attr("y", 25)
+        .text("Federal Funds Rate vs. U.S. Inflation, 1955–2026");
+    
+    // Chart subtitle.
+    svg.append("text")
+        .attr("class", "chart-subtitle")
+        .attr("x", margin.left).attr("y", 45)
+        .text("Monthly federal funds rate and year-over-year CPI inflation");
 
     const xScale = d3.scaleTime()
         .domain(d3.extent(data, d => d.date))
