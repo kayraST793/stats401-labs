@@ -60,9 +60,9 @@ function drawChart(data, recessions) {
         { key: "inflation", label: "CPI inflation (year-over-year)", endLabel: "CPI inflation (YoY)", color: "#d62728" }
     ];
 
-    const width = 900;
+    const width = 1000;
     const height = 500;
-    const margin = { top: 30, right: 160, bottom: 50, left: 60 };
+    const margin = { top: 30, right: 130, bottom: 50, left: 60 };
 
     const svg = d3.select("#chart")
         .append("svg")
