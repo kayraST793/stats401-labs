@@ -108,18 +108,6 @@ function drawChart(data, recessions) {
         .call(d3.axisLeft(yScale).tickFormat(d => d + "%"));
 
     // Y-axis title.
-    const labelOffset = s.key === "fedfunds" ? -8 : 8;
-    // const labelY = yScale(last[s.key]) + labelOffset;
-    // const endX = xScale(last.date);
-    
-    // svg.append("line")
-    //     .attr("x1", endX)
-    //     .attr("y1", yScale(last[s.key]))
-    //     .attr("x2", width - margin.right + 5)
-    //     .attr("y2", labelY)
-    //     .attr("stroke", s.color)
-    //     .attr("stroke-width", 1);
-    
     svg.append("text")
         .attr("class", "axis-title")
         .attr("text-anchor", "middle")
@@ -150,6 +138,10 @@ function drawChart(data, recessions) {
 
         // Direct label at the right end, so no separate legend lookup is needed.
         const last = data[data.length - 1];
+
+         // Move labels apart so they don't overlap.
+        const labelOffset = s.key === "fedfunds" ? -10 : 10;
+        
         svg.append("text")
             .attr("class", "series-label")
             .attr("x", width - margin.right + 8)
