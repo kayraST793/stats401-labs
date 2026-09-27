@@ -768,6 +768,17 @@ body.wide #legend {
     font-weight: normal;
 }
 
+.redesign-svg .chart-title {
+    font-size: 17px;
+    font-weight: 600;
+    fill: #222;
+}
+
+.redesign-svg .chart-subtitle {
+    font-size: 12px;
+    fill: #777;
+}
+
 .redesign-svg .series-label {
     font-size: 12px;
     font-weight: 600;
