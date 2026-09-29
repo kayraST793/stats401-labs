@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Lab 9: <NAME></title>
+    <title>Lab 9: Geospatial Visualization</title>
 
     <link rel="stylesheet"
           href="../css/style.css">
@@ -35,19 +35,129 @@
 
 <main>
 
-    <h1>Lab 9</h1>
-    <h2>Lab 9: <NAME></h2>
+    <h2>Lab 9: Geospatial Visualization</h2>
 
     <p>
-        Lab 9 will be added here.
+        Two coordinated views of one variable - 2025 nominal GDP for the world's
+        50 largest economies. In the first, color carries the value (a
+        choropleth); in the second, area carries it (a cartogram). Hovering a
+        country in either view previews it in both; clicking pins the selection
+        so it stays highlighted, and clicking it again clears it.
     </p>
 
-    <a class="back" href="../index.html">← Back to home</a>
+    <section class="analysis">
+        <h3>1. Dataset</h3>
+        <p>
+            The GDP figures are the 50 largest economies by 2025 nominal GDP
+            (current prices, billions of U.S. dollars) from the IMF World Economic
+            Outlook, October 2025. Some observations are IMF staff estimates and
+            may later be revised. Country boundaries come from a world GeoJSON in
+            which every feature carries an ISO-3 code; that code is the key used to
+            join the two files. Economies outside the top 50 are shown as missing
+            data, not as zero.
+        </p>
+        <dl class="dataset-meta">
+            <dt>Statistics</dt>
+            <dd>data/lab9_gdp_2025_top50.csv (IMF WEO, October 2025 nominal GDP)</dd>
+            <dt>Boundaries</dt>
+            <dd>data/world.geojson (world countries, ISO-3 coded)</dd>
+            <dt>Join key</dt>
+            <dd>ISO-3 country code</dd>
+            <dt>Variables</dt>
+            <dd>iso3, country, gdp_2025_billion_usd, rank</dd>
+        </dl>
+        <p>The ten largest economies in the dataset:</p>
+        <div id="gdp-top"></div>
+    </section>
+
+    <section class="analysis">
+        <h3>2. 2025 GDP Choropleth</h3>
+        <p>
+            Color encodes 2025 GDP: darker means larger. Hover a country for its
+            exact value and rank, scroll to zoom, and drag to pan.
+        </p>
+
+        <div class="controls">
+            <label for="scale-type">Color scale:</label>
+            <select id="scale-type">
+                <option value="linear">Linear</option>
+                <option value="log" selected>Logarithmic</option>
+                <option value="sqrt">Square root</option>
+            </select>
+            <button id="reset-zoom">Reset view</button>
+        </div>
+
+        <div id="choropleth-map"></div>
+        <div id="choro-legend" class="choro-legend"></div>
+        <p class="chart-note">
+            Grey countries are outside the top-50 dataset (missing data, not zero).
+            The legend and its tick spacing update with the selected scale.
+        </p>
+
+        <p>
+            <strong>Color scale choice.</strong> 2025 GDP is heavily skewed: the
+            United States (30,616 B) and China (19,399 B) dwarf a long tail of
+            economies under 1,000 B. On a linear scale almost every country
+            collapses into the palest shade while only two go dark, so the map
+            cannot separate the mid-tier. A logarithmic scale spreads those
+            economies across distinct shades and is the default here; a
+            square-root scale is a milder compromise. Use the selector to compare -
+            the logarithmic scale gives the most readable map for this
+            distribution.
+        </p>
+    </section>
+
+    <section class="analysis">
+        <h3>3. 2025 GDP Cartogram</h3>
+        <p>
+            Each economy is a circle whose <strong>area is proportional to its
+            2025 GDP</strong> (radius scaled by the square root of GDP). Position
+            is an approximate geographic layout; circles are pushed apart so none
+            overlap. Hover any circle for its exact value and rank; the largest
+            economies are labelled with their ISO-3 code.
+        </p>
+
+        <div id="cartogram-map"></div>
+        <p class="chart-note">
+            Area encodes GDP. True shape and exact position are deliberately
+            sacrificed so that magnitude and rank can be read directly.
+        </p>
+    </section>
+
+    <section class="analysis">
+        <h3>4. Design and Comparison</h3>
+
+        <p>
+            On the choropleth the United States and China read as the darkest
+            regions, but because a few very large economies compress the scale,
+            most of the top 50 look similarly pale and are hard to separate. On the
+            cartogram the United States dominates as by far the largest circle,
+            with China second and Japan, Germany, India and the United Kingdom
+            forming a clear next tier. Countries with large territory but moderate
+            output, such as Russia, Canada, Australia and Brazil, shrink sharply
+            once area encodes GDP rather than land; small, wealthy economies such
+            as Japan, South Korea, the Netherlands and Switzerland grow relative to
+            their tiny footprints. The choropleth preserves real position, borders
+            and adjacency, so it answers geographic questions: which regions are
+            wealthy, how neighbours compare, where the gaps sit. The cartogram
+            discards true shape and area and keeps only approximate position, but
+            it makes magnitude and rank immediate, because the eye compares area
+            far more accurately than shade. The choropleth is therefore best for
+            "where" questions and regional pattern; the cartogram is best for "how
+            much" and ranking. Moving from color to area changes the sense of
+            scale: the concentration of world output in a handful of economies,
+            easy to miss among near-identical shades, becomes unmistakable when the
+            United States circle towers over every other.
+        </p>
+    </section>
+
+    <a class="back" href="../index.html">Back to home</a>
 </main>
 
 <script src="https://cdn.jsdelivr.net/npm/d3@7"></script>
-<!-- Place the .js file here -->
-<!-- <script src="js/lab#.js"></script> -->
+<script src="lab9.js"></script>
+
+<div id="tooltip" class="tooltip"></div>
 
 </body>
 
