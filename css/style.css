@@ -743,7 +743,6 @@ body.wide #legend {
     border: 1px solid var(--line);
     border-radius: 10px;
     background: #fff;
-    font-family: Arial, sans-serif;
 }
 
 .redesign-svg .series-line {
@@ -760,24 +759,6 @@ body.wide #legend {
 .redesign-svg .recession-band {
     fill: #cbd2d9;
     fill-opacity: 0.45;
-}
-
-.redesign-svg .recession-label {
-    font-size: 10px;
-    fill: #777;
-    font-style: italic;
-    font-weight: normal;
-}
-
-.redesign-svg .chart-title {
-    font-size: 17px;
-    font-weight: 600;
-    fill: #222;
-}
-
-.redesign-svg .chart-subtitle {
-    font-size: 12px;
-    fill: #777;
 }
 
 .redesign-svg .series-label {
@@ -856,3 +837,11 @@ body.wide #legend {
     color: #1f3864;
     font-size: 16px;
 }
+
+/* Lab 9 - geospatial tasks */
+.data-table { border-collapse: collapse; width: 100%; font-size: 14px; margin: 6px 0; }
+.data-table th, .data-table td { padding: 6px 10px; border-bottom: 1px solid #eee; text-align: left; white-space: nowrap; }
+.data-table thead th { background: #1f3864; color: white; }
+.data-table tbody tr:nth-child(even) { background: #f6f8fb; }
+.data-table tbody tr:hover { background: #eef3fb; }
+.map-svg { width: 100%; height: auto; background: #f2f6fb; border: 1px solid #e2e8f0; border-radius: 4px; margin: 6px 0; }
