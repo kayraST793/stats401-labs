@@ -86,8 +86,7 @@ Promise.all([
             paint(p.iso3);
         })
         .on("mousemove", moveTip)
-        .on("mouseout", () => { tooltip.style("opacity", 0); paint(null); })
-        .on("click", (event, d) => toggleSelect(d.properties.iso3));
+        .on("mouseout", () => { tooltip.style("opacity", 0); paint(null); });
 
     function drawChoropleth(type) {
         const scale = colorScaleFor(type);
@@ -133,9 +132,38 @@ Promise.all([
     updateChoropleth("log");
     d3.select("#scale-type").on("change", function () { updateChoropleth(this.value); });
 
+    // Zoom and pan. d3.zoom owns pointer gestures on the SVG, which suppresses a
+    // separate click event on the countries. So detect a click here: if a mouse
+    // gesture ends without meaningful movement, treat it as a click on the
+    // country under the pointer and toggle its selection. Real pans (movement
+    // beyond a few pixels) and wheel zoom are excluded.
+    let gestureStart = null;
+    let gestureMoved = false;
     const zoom = d3.zoom().scaleExtent([1, 8])
-        .on("zoom", (event) => choroGroup.attr("transform", event.transform));
-    choroSvg.call(zoom);
+        .on("start", (event) => {
+            const s = event.sourceEvent;
+            gestureStart = s ? [s.clientX, s.clientY] : null;
+            gestureMoved = false;
+        })
+        .on("zoom", (event) => {
+            choroGroup.attr("transform", event.transform);
+            const s = event.sourceEvent;
+            if (s && gestureStart) {
+                const dx = s.clientX - gestureStart[0];
+                const dy = s.clientY - gestureStart[1];
+                if (dx * dx + dy * dy > 25) gestureMoved = true;
+            }
+        })
+        .on("end", (event) => {
+            const s = event.sourceEvent;
+            if (gestureMoved || !s) return;
+            if (s.type !== "mouseup" && s.type !== "pointerup" && s.type !== "touchend") return;
+            const datum = d3.select(s.target).datum();
+            if (datum && datum.properties && datum.properties.iso3) {
+                toggleSelect(datum.properties.iso3);
+            }
+        });
+    choroSvg.call(zoom).on("dblclick.zoom", null);
     d3.select("#reset-zoom").on("click", () =>
         choroSvg.transition().duration(400).call(zoom.transform, d3.zoomIdentity));
 
