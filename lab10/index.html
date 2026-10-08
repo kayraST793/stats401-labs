@@ -96,6 +96,20 @@
             margin-top: 6px;
             display: none;
         }
+
+        /* Inline label for a literal UI button, so control names in the prose
+           look like the buttons they refer to. */
+        kbd.ui {
+            font-family: inherit;
+            font-size: 0.9em;
+            background: #eef1f6;
+            border: 1px solid #c3c9d4;
+            border-bottom-width: 2px;
+            border-radius: 4px;
+            padding: 1px 6px;
+            white-space: nowrap;
+            color: #1f2a44;
+        }
     </style>
 </head>
 
@@ -128,10 +142,11 @@
 
     <p>
         This extends the Lab 9 geospatial visualization (the 2025 GDP choropleth
-        and cartogram) with two novel input modalities. Voice highlights a
-        country, and hand gestures seen through the webcam zoom and reset the
-        map. The mouse still works exactly as before, so the novel inputs are
-        added on top of the existing interaction, not in place of it.
+        and cartogram) with two novel input modalities. <strong>Voice</strong>
+        highlights a country, and <strong>hand gestures</strong> seen through the
+        webcam zoom and reset the map. The mouse still works exactly as before,
+        so the novel inputs are added on top of the existing interaction, not in
+        place of it.
     </p>
 
     <section class="analysis">
@@ -141,10 +156,10 @@
             <div class="modality">
                 <h4>Voice: highlight a country</h4>
                 <p>
-                    In the floating Controls panel (bottom-right), click Start
-                    Voice Control once and allow the microphone. It keeps
-                    listening, so you can say several commands in a row; click
-                    again to stop. Try:
+                    In the floating Controls panel (bottom-right), click
+                    <kbd class="ui">Start Voice Control</kbd> once and allow the
+                    microphone. It keeps listening, so you can say several
+                    commands in a row; click again to stop. Try:
                 </p>
                 <ul>
                     <li>"highlight Japan" &rarr; pin that country in both views</li>
@@ -156,8 +171,9 @@
             <div class="modality">
                 <h4>Hand gesture: zoom and reset</h4>
                 <p>
-                    In the floating Controls panel, click Start Camera, allow the
-                    webcam, then Start Gesture Detection. Then:
+                    In the floating Controls panel, click
+                    <kbd class="ui">Start Camera</kbd>, allow the webcam, then
+                    <kbd class="ui">Start Gesture Detection</kbd>. Then:
                 </p>
                 <ul>
                     <li>Pinch shape (index out, other fingers curled): thumb and
@@ -182,9 +198,10 @@
         <p class="chart-note">
             <strong>Fallback.</strong> The mouse controls from Lab 9 are
             unchanged: hover for a tooltip, click a country to pin it, scroll to
-            zoom, drag to pan, and use the color-scale selector and Reset view
-            button below. The visualization stays fully usable if the microphone
-            or camera is unavailable or a command is not recognized.
+            zoom, drag to pan, and use the color-scale selector and
+            <kbd class="ui">Reset view</kbd> button below. The visualization stays
+            fully usable if the microphone or camera is unavailable or a command
+            is not recognized.
         </p>
     </section>
 

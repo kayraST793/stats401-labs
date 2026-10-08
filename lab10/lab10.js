@@ -259,9 +259,7 @@ Promise.all([
         paint(iso3);
     }
 
-    // =======================================================================
-    // Novel interaction layer. Everything below drives the functions above.
-    // =======================================================================
+    // ---- Novel interaction: voice selection and hand-gesture zoom/reset ----
 
     // Spoken country names map onto the GDP table's own names, but some table
     // names differ from how people say them (Turkiye, Russian Federation,
