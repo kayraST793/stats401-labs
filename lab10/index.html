@@ -4,10 +4,99 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Lab 10: <NAME></title>
+    <title>Lab 10: Novel Interaction (Geospatial)</title>
 
     <link rel="stylesheet"
           href="../css/style.css">
+
+    <style>
+        .interaction-panel {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 24px;
+            margin: 12px 0;
+        }
+        .interaction-panel .modality {
+            flex: 1 1 320px;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            padding: 12px 16px;
+            background: #fafafa;
+        }
+        .interaction-panel h4 {
+            margin: 0 0 6px;
+        }
+        .interaction-panel .feedback {
+            font-family: monospace;
+            font-size: 13px;
+            margin: 4px 0 0;
+            min-height: 1.2em;
+        }
+        #camera {
+            width: 220px;
+            max-width: 100%;
+            border: 1px solid #ccc;
+            transform: scaleX(-1);
+            background: #000;
+        }
+
+        /* Floating control dock: keeps the live controls beside the map while
+           scrolling, so voice does not require scrolling back up. */
+        #control-dock {
+            position: fixed;
+            right: 16px;
+            bottom: 16px;
+            width: 280px;
+            max-width: 90vw;
+            background: #fff;
+            border: 1px solid #ccc;
+            border-radius: 8px;
+            box-shadow: 0 2px 12px rgba(0, 0, 0, 0.18);
+            z-index: 1000;
+            font-size: 13px;
+        }
+        #control-dock .dock-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 6px 10px;
+            background: #2b3a55;
+            color: #fff;
+            border-radius: 8px 8px 0 0;
+            cursor: pointer;
+            font-weight: 600;
+        }
+        #control-dock .dock-body {
+            padding: 10px;
+        }
+        #control-dock.collapsed .dock-body {
+            display: none;
+        }
+        #control-dock .dock-group + .dock-group {
+            margin-top: 10px;
+            border-top: 1px solid #eee;
+            padding-top: 10px;
+        }
+        #control-dock h5 {
+            margin: 0 0 6px;
+            font-size: 13px;
+        }
+        #control-dock .feedback {
+            font-family: monospace;
+            font-size: 12px;
+            margin: 4px 0 0;
+            min-height: 1.1em;
+            word-break: break-word;
+        }
+        #control-dock button {
+            margin: 2px 2px 0 0;
+        }
+        #control-dock #camera {
+            width: 100%;
+            margin-top: 6px;
+            display: none;
+        }
+    </style>
 </head>
 
 <body>
@@ -35,19 +124,388 @@
 
 <main>
 
-    <h1>Lab 10</h1>
-    <h2>Lab 10: <NAME></h2>
+    <h2>Lab 10: Novel Interaction with a Geospatial Visualization</h2>
 
     <p>
-        Lab 10 will be added here.
+        This extends the Lab 9 geospatial visualization (the 2025 GDP choropleth
+        and cartogram) with two novel input modalities. Voice highlights a
+        country, and hand gestures seen through the webcam zoom and reset the
+        map. The mouse still works exactly as before, so the novel inputs are
+        added on top of the existing interaction, not in place of it.
     </p>
 
-    <a class="back" href="../index.html">← Back to home</a>
+    <section class="analysis">
+        <h3>Novel interaction</h3>
+
+        <div class="interaction-panel">
+            <div class="modality">
+                <h4>Voice: highlight a country</h4>
+                <p>
+                    In the floating Controls panel (bottom-right), click Start
+                    Voice Control once and allow the microphone. It keeps
+                    listening, so you can say several commands in a row; click
+                    again to stop. Try:
+                </p>
+                <ul>
+                    <li>"highlight Japan" &rarr; pin that country in both views</li>
+                    <li>"select Germany" &rarr; pin that country in both views</li>
+                    <li>"reset" &rarr; clear the selection and the zoom</li>
+                </ul>
+            </div>
+
+            <div class="modality">
+                <h4>Hand gesture: zoom and reset</h4>
+                <p>
+                    In the floating Controls panel, click Start Camera, allow the
+                    webcam, then Start Gesture Detection. Then:
+                </p>
+                <ul>
+                    <li>Pinch shape (index out, other fingers curled): thumb and
+                        index apart zooms out, together zooms in</li>
+                    <li>Open palm &rarr; reset the view</li>
+                    <li>Thumbs up &rarr; pause or resume</li>
+                </ul>
+                <p>
+                    Zoom only responds in the pinch shape, so relaxing your hand
+                    holds the current zoom.
+                </p>
+            </div>
+        </div>
+
+        <p class="chart-note">
+            <strong>Controls panel.</strong> The voice and camera controls sit in
+            a small panel pinned to the corner of the window, so they stay beside
+            the map as you scroll and voice does not require scrolling back up.
+            Click its header to collapse or expand it.
+        </p>
+
+        <p class="chart-note">
+            <strong>Fallback.</strong> The mouse controls from Lab 9 are
+            unchanged: hover for a tooltip, click a country to pin it, scroll to
+            zoom, drag to pan, and use the color-scale selector and Reset view
+            button below. The visualization stays fully usable if the microphone
+            or camera is unavailable or a command is not recognized.
+        </p>
+    </section>
+
+    <section class="analysis">
+        <h3>1. Dataset</h3>
+        <p>
+            The GDP figures are the 50 largest economies by 2025 nominal GDP
+            (current prices, billions of U.S. dollars) from the IMF World
+            Economic Outlook, October 2025. Country boundaries come from a world
+            GeoJSON keyed by ISO-3 code, which is the join key. Economies outside
+            the top 50 are shown as missing data, not as zero.
+        </p>
+        <p>The ten largest economies in the dataset:</p>
+        <div id="gdp-top"></div>
+    </section>
+
+    <section class="analysis">
+        <h3>2. 2025 GDP Choropleth</h3>
+        <p>
+            Color encodes 2025 GDP: darker means larger. Hover a country for its
+            exact value and rank, scroll to zoom, and drag to pan. Voice and
+            gesture act on this map.
+        </p>
+
+        <div class="controls">
+            <label for="scale-type">Color scale:</label>
+            <select id="scale-type">
+                <option value="linear">Linear</option>
+                <option value="log" selected>Logarithmic</option>
+                <option value="sqrt">Square root</option>
+            </select>
+            <button id="reset-zoom">Reset view</button>
+        </div>
+
+        <div id="choropleth-map"></div>
+        <div id="choro-legend" class="choro-legend"></div>
+        <p class="chart-note">
+            Grey countries are outside the top-50 dataset (missing data, not
+            zero). The legend and its tick spacing update with the selected
+            scale.
+        </p>
+    </section>
+
+    <section class="analysis">
+        <h3>3. 2025 GDP Cartogram</h3>
+        <p>
+            Each economy is a circle whose <strong>area is proportional to its
+            2025 GDP</strong> (radius scaled by the square root of GDP). Position
+            is an approximate geographic layout; circles are pushed apart so none
+            overlap. Hovering or selecting a country highlights it here too.
+        </p>
+
+        <div id="cartogram-map"></div>
+        <p class="chart-note">
+            Area encodes GDP. True shape and exact position are deliberately
+            sacrificed so that magnitude and rank can be read directly.
+        </p>
+    </section>
+
+    <section class="analysis">
+        <h3>4. Design reflection</h3>
+        <p>
+            I extended the Lab 9 geospatial visualization, a 2025 GDP choropleth
+            paired with a Dorling cartogram. I added two novel inputs: voice to
+            highlight a country and hand gestures to zoom, reset, and pause the
+            map. Voice supports the selection task: country names are discrete
+            labels that speech recognition handles reliably, so saying "highlight
+            Japan" pins that country in both views faster than hunting for a small
+            shape with the cursor. Pinch gestures support navigation: the distance
+            between thumb and index finger scales the map, an open palm resets it,
+            and a thumbs up pauses tracking so the map stops following my hand.
+            Each input is matched to a task it does well, discrete naming for
+            selection and continuous hand distance for zoom, while the mouse
+            remains for precise panning. The main limitations were recognition
+            errors: speech sometimes misheard or returned nothing, and some table
+            names differ from how people say them (Türkiye, Russian Federation),
+            so I added spoken aliases. The gesture model also jittered the zoom and
+            sometimes confused a relaxed hand, which smoothing, a cooldown, and the
+            pause gesture reduced.
+        </p>
+    </section>
+
+    <section class="analysis">
+        <h3>Submission checklist</h3>
+        <ul class="checklist">
+            <li>Reuses the Lab 9 geospatial visualization.</li>
+            <li>Adds two novel interactions: voice selection and gesture zoom/reset.</li>
+            <li>Each interaction supports a specific task (highlight, zoom, reset).</li>
+            <li>Visible feedback: voice heard/action and gesture detected/zoom.</li>
+            <li>Conventional fallback kept: hover, click, scroll, drag, buttons.</li>
+            <li>Camera and microphone require an explicit button click.</li>
+            <li>Includes a design reflection.</li>
+        </ul>
+    </section>
+
+    <a class="back" href="../index.html">Back to home</a>
 </main>
 
 <script src="https://cdn.jsdelivr.net/npm/d3@7"></script>
-<!-- Place the .js file here -->
-<!-- <script src="js/lab#.js"></script> -->
+<script src="lab10.js"></script>
+
+<!-- Hand gesture: MediaPipe Gesture Recognizer. Loaded as a module because the
+     library ships as ES modules. One model gives both a gesture label (used for
+     Open_Palm reset) and 21 hand landmarks (thumb and index tips give a pinch
+     distance that drives zoom). It calls window.vizApi from lab10.js. -->
+<script type="module">
+    import { GestureRecognizer, FilesetResolver }
+        from "https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@0.10.14";
+
+    const video = document.getElementById("camera");
+    const statusEl = document.getElementById("gesture-status");
+    const actionEl = document.getElementById("gesture-action");
+
+    let cameraStream = null;
+    let gestureRecognizer = null;
+    let detecting = false;
+
+    // Reset cooldown so one open palm does not fire many times per second.
+    let lastReset = 0;
+    const resetCooldown = 1500;
+
+    // Smoothed zoom so the map does not jitter frame to frame.
+    let smoothedScale = 1;
+
+    // Thumbs up toggles pause so the zoom stops following the hand.
+    let paused = false;
+    let lastToggle = 0;
+    const toggleCooldown = 1200;
+
+    // Debounce: act on a pose only after it is held for a few frames, so the
+    // half-formed hand during a transition (e.g. palm to thumbs up) is ignored.
+    let lastLabel = "None";
+    let labelStreak = 0;
+    let stableLabel = "None";
+    const stableFrames = 4;
+
+    // Last pinch distance, to guard against sudden jumps.
+    let lastPinchDist = null;
+
+    // Open the camera only on an explicit click.
+    d3.select("#camera-start").on("click", async function () {
+        try {
+            const stream = await navigator.mediaDevices.getUserMedia({ video: true });
+            video.srcObject = stream;
+            cameraStream = stream;
+            video.style.display = "block";
+            statusEl.textContent = "Camera on. Click Start Gesture Detection.";
+        } catch (err) {
+            statusEl.textContent = "Camera unavailable.";
+        }
+    });
+
+    d3.select("#camera-stop").on("click", function () {
+        detecting = false;
+        if (cameraStream) {
+            cameraStream.getTracks().forEach(t => t.stop());
+            cameraStream = null;
+        }
+        video.srcObject = null;
+        video.style.display = "none";
+        statusEl.textContent = "Camera off.";
+    });
+
+    async function loadModel() {
+        statusEl.textContent = "Loading gesture model...";
+        const vision = await FilesetResolver.forVisionTasks(
+            "https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@0.10.14/wasm"
+        );
+        gestureRecognizer = await GestureRecognizer.createFromOptions(vision, {
+            baseOptions: {
+                modelAssetPath: "https://storage.googleapis.com/mediapipe-models/gesture_recognizer/gesture_recognizer/float16/1/gesture_recognizer.task"
+            },
+            runningMode: "VIDEO",
+            numHands: 1
+        });
+    }
+
+    function distance(a, b) {
+        const dx = a.x - b.x;
+        const dy = a.y - b.y;
+        return Math.sqrt(dx * dx + dy * dy);
+    }
+
+    // A pose only becomes "stable" once the same label repeats for a few
+    // frames, which filters out the transient mislabels between gestures.
+    function stabilize(label) {
+        if (label === lastLabel) {
+            labelStreak++;
+        } else {
+            lastLabel = label;
+            labelStreak = 1;
+        }
+        if (labelStreak >= stableFrames) stableLabel = label;
+        return stableLabel;
+    }
+
+    // Pinch pose: index finger extended with the middle, ring, and little
+    // fingers curled. A natural pinch satisfies this, but an open palm, fist,
+    // thumbs up, or a mid-transition hand does not, so zoom is opt-in and does
+    // not fire on every frame.
+    function isPinchPose(lm) {
+        const indexExtended = lm[8].y < lm[6].y;
+        const middleCurled = lm[12].y > lm[10].y;
+        const ringCurled = lm[16].y > lm[14].y;
+        const littleCurled = lm[20].y > lm[18].y;
+        return indexExtended && middleCurled && ringCurled && littleCurled;
+    }
+
+    function loop() {
+        if (!detecting || !gestureRecognizer) return;
+
+        if (video.readyState >= 2) {
+            const results = gestureRecognizer.recognizeForVideo(video, performance.now());
+            const raw = results.gestures.length ? results.gestures[0][0].categoryName : "None";
+            const label = stabilize(raw);
+            const lm = results.landmarks.length ? results.landmarks[0] : null;
+
+            if (label === "Thumb_Up") {
+                // Thumbs up toggles pause/resume, with a cooldown.
+                const now = Date.now();
+                if (now - lastToggle >= toggleCooldown) {
+                    lastToggle = now;
+                    paused = !paused;
+                    statusEl.textContent = paused
+                        ? "Paused. Thumbs up to resume."
+                        : "Detecting gestures...";
+                    actionEl.textContent = paused
+                        ? "Detected: Thumb_Up -> Pause"
+                        : "Detected: Thumb_Up -> Resume";
+                }
+                lastPinchDist = null;
+            } else if (paused) {
+                // While paused, ignore everything except the thumbs up above.
+            } else if (label === "Open_Palm") {
+                // Open palm resets the view, with a cooldown.
+                const now = Date.now();
+                if (now - lastReset >= resetCooldown) {
+                    lastReset = now;
+                    if (window.vizApi) window.vizApi.resetView();
+                    actionEl.textContent = "Detected: Open_Palm -> Reset view";
+                }
+                lastPinchDist = null;
+            } else if (lm && isPinchPose(lm)) {
+                // Thumb tip (4) to index tip (8) distance controls zoom:
+                // fingers together zooms in, apart zooms out.
+                const d = distance(lm[4], lm[8]);
+                // Skip a frame if the distance jumped implausibly (tracking blip).
+                if (lastPinchDist !== null && Math.abs(d - lastPinchDist) > 0.15) {
+                    lastPinchDist = d;
+                } else {
+                    lastPinchDist = d;
+                    const target = 1 + (0.30 - d) / (0.30 - 0.03) * (8 - 1);
+                    const clamped = Math.max(1, Math.min(8, target));
+                    smoothedScale += (clamped - smoothedScale) * 0.2;
+                    if (window.vizApi) window.vizApi.zoomTo(smoothedScale);
+                    actionEl.textContent = `Pinch zoom: ${smoothedScale.toFixed(1)}x`;
+                }
+            } else {
+                // Neutral hand: hold the current zoom, do nothing.
+                lastPinchDist = null;
+            }
+        }
+
+        requestAnimationFrame(loop);
+    }
+
+    d3.select("#gesture-start").on("click", async function () {
+        if (!video.srcObject) {
+            statusEl.textContent = "Start the camera first.";
+            return;
+        }
+        if (!gestureRecognizer) {
+            try {
+                await loadModel();
+            } catch (err) {
+                statusEl.textContent = "Gesture model unavailable.";
+                return;
+            }
+        }
+        detecting = true;
+        smoothedScale = window.vizApi ? window.vizApi.currentZoom() : 1;
+        statusEl.textContent = "Detecting gestures...";
+        loop();
+    });
+</script>
+
+<div id="control-dock">
+    <div class="dock-header" id="dock-toggle">
+        <span>Controls</span>
+        <span id="dock-caret">&#9662;</span>
+    </div>
+    <div class="dock-body">
+        <div class="dock-group">
+            <h5>Voice</h5>
+            <button id="voice-button">Start Voice Control</button>
+            <p id="voice-status" class="feedback">Checking voice support...</p>
+            <p id="voice-action" class="feedback"></p>
+        </div>
+        <div class="dock-group">
+            <h5>Hand gesture</h5>
+            <button id="camera-start">Start Camera</button>
+            <button id="camera-stop">Stop Camera</button>
+            <button id="gesture-start">Start Gesture Detection</button>
+            <video id="camera" autoplay playsinline></video>
+            <p id="gesture-status" class="feedback">Camera off.</p>
+            <p id="gesture-action" class="feedback"></p>
+        </div>
+    </div>
+</div>
+
+<script>
+    // Collapse or expand the floating control dock.
+    document.getElementById("dock-toggle").addEventListener("click", function () {
+        const dock = document.getElementById("control-dock");
+        dock.classList.toggle("collapsed");
+        document.getElementById("dock-caret").innerHTML =
+            dock.classList.contains("collapsed") ? "&#9656;" : "&#9662;";
+    });
+</script>
+
+<div id="tooltip" class="tooltip"></div>
 
 </body>
 
